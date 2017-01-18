@@ -24,7 +24,7 @@ This means you haven't installed the package! You'll only have to do the
 installation once, but you will have to load the mosaic library (as
 above) at the beginning of each new R session if you intend to use it.
 If you haven't installed the mosaic library, see the [instructions
-here.](http://jgscott.github.io/teaching/r/basics/installing_library.html)
+here.](../basics/installing_library.md)
 
 The mosaic library has two useful functions, `pdata` and `qdata`, for
 dealing with quantiles of data sets. If you don't load the library, some

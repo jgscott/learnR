@@ -215,8 +215,9 @@ This command creates a subset of the original data set containing all
 the males and none of the females. Note two things about the right-hand
 side of this expression:  
 1. We put "male" in quotation marks, because sex is a categorical
-variable. 2. The double-equals sign `==` is used to check for equality,
-as opposed to the single equals sign `=` used in variable assignment.
+variable.  
+2. The double-equals sign `==` is used to check for equality, as opposed
+to the single equals sign `=` used in variable assignment.
 
 Let's now build a table from this subset:
 
@@ -272,8 +273,9 @@ A mosaic plot can help to visualize multiway tables.
 
     mosaicplot(~ sex + AgeCategory + survived, data=TitanicSurvival)
 
-![](titanic_files/figure-markdown_strict/unnamed-chunk-19-1.png) The
-area of each box tells you what fraction of cases fall into the
+![](titanic_files/figure-markdown_strict/unnamed-chunk-19-1.png)
+
+The area of each box tells you what fraction of cases fall into the
 corresponding cell of the contingency table. From this plot, it's clear
 that adult male passengers of the Titanic died in far higher proportions
 than any other category of person.

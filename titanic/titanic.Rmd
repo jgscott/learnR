@@ -114,8 +114,8 @@ R makes it easy to condition on a variable in looking at various data summaries.
 TitanicMales = subset(TitanicSurvival, sex=="male")
 ```
 This command creates a subset of the original data set containing all the males and none of the females.  Note two things about the right-hand side of this expression:  
-1. We put "male" in quotation marks, because sex is a categorical variable.
-2. The double-equals sign `==` is used to check for equality, as opposed to the single equals sign `=` used in variable assignment.
+1. We put "male" in quotation marks, because sex is a categorical variable.  
+2. The double-equals sign `==` is used to check for equality, as opposed to the single equals sign `=` used in variable assignment.  
 
 Let's now build a table from this subset:
 ```{r}
@@ -135,6 +135,7 @@ Finally, we can also define subsets in terms of a numerical variable like age:
 xtabs(~survived + sex, data=subset(TitanicSurvival, age < 18))
 xtabs(~survived + passengerClass, data=subset(TitanicSurvival, age >= 18))
 ```
+
  We do not put 18 in quotation marks, because age is a numerical variable.
 
 ### Mosaic plot
@@ -143,4 +144,5 @@ A mosaic plot can help to visualize multiway tables.
 ```{r}
 mosaicplot(~ sex + AgeCategory + survived, data=TitanicSurvival)
 ```
+
 The area of each box tells you what fraction of cases fall into the corresponding cell of the contingency table.  From this plot, it's clear that adult male passengers of the Titanic died in far higher proportions than any other category of person.
