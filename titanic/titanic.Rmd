@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 
@@ -13,7 +11,7 @@ In this walk-through, you will learn a few tools for summarizing categorical dat
 - to turn a numerical variable into a categorical variable using the `cut` function.
 
 Data files:  
-* [TitanicSurvival.csv](TitanicSurvival.csv)  
+* [TitanicSurvival.csv](http://jgscott.github.io/teaching/data/TitanicSurvival.csv)  
 
 First download the TitanicSurvival.csv file and read it in. You can use RStudio's Import Dataset button, or the read.csv command:
 ```{r}

@@ -1,7 +1,3 @@
----
-layout: page
----
-
 This is a "hello world" walk-through intended as a gentle introduction to R.
 
 ### Using R as a calculator
@@ -53,7 +49,7 @@ This may not look all that impressive.  But as you'll soon learn, the ability to
 ### A first look at data
 
 For this part, you'll need to download the following data file to your hard drive:   
-* [heights.csv](heights.csv)  
+* [heights.csv](http://jgscott.github.io/teaching/data/heights.csv)  
 
 Let's look at some data on the data on students' heights versus their parents' heights; this was from a survey taken in the first class that I ever taught at the University of Texas.
 

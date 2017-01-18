@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ## Test scores and GPA for UT graduates
@@ -15,7 +13,7 @@ In this walk-through, you'll learn how to summarize and visualize the following 
 You will also learn how to change more of the default plot settings in R plots.
 
 You'll need this data file:  
-* [ut2000.csv](ut2000.csv): data on SAT scores and graduating GPA for every student who entered the University of Texas at Austin in the fall of 2000 and went on to graduate within 6 years.
+* [ut2000.csv](http://jgscott.github.io/teaching/data/ut2000.csv): data on SAT scores and graduating GPA for every student who entered the University of Texas at Austin in the fall of 2000 and went on to graduate within 6 years.
 
 ### Preliminaries
 

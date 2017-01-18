@@ -17,9 +17,10 @@ You will also learn how to change more of the default plot settings in R
 plots.
 
 You'll need this data file:  
-\* [ut2000.csv](ut2000.csv): data on SAT scores and graduating GPA for
-every student who entered the University of Texas at Austin in the fall
-of 2000 and went on to graduate within 6 years.
+\* [ut2000.csv](http://jgscott.github.io/teaching/data/ut2000.csv): data
+on SAT scores and graduating GPA for every student who entered the
+University of Texas at Austin in the fall of 2000 and went on to
+graduate within 6 years.
 
 ### Preliminaries
 
@@ -59,13 +60,14 @@ SAT math scores (SAT.Q) versus school.
 
     bwplot(SAT.Q ~ School, data=ut2000, main="SAT Math Scores by College")
 
-![](sat_files/figure-markdown_strict/unnamed-chunk-3-1.png)  
- The `bwplot` command is available because we loaded the `mosaic`
-package (if you didn't do this, the bwplot command will produce only an
-error). The aesthetics of `bwplot` are a little nicer than the basic R
-command `boxplot`, which would also work just fine. You may also notice
-the names of the colleges along the x axis running together, which you
-can fix by clicking "Zoom" in the Plots tab and manually resizing the
+![](sat_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+
+The `bwplot` command is available because we loaded the `mosaic` package
+(if you didn't do this, the bwplot command will produce only an error).
+The aesthetics of `bwplot` are a little nicer than the basic R command
+`boxplot`, which would also work just fine. You may also notice the
+names of the colleges along the x axis running together, which you can
+fix by clicking "Zoom" in the Plots tab and manually resizing the
 window.
 
 The boxplot allows you to get a sense of whether the between-group or
@@ -143,15 +145,15 @@ versus SAT math scores for all students.
 
     plot(GPA ~ SAT.Q, data=ut2000)
 
-![](sat_files/figure-markdown_strict/unnamed-chunk-7-1.png)  
- If you want to get fancy, you can change the type of mark (pch), size
+![](sat_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+
+If you want to get fancy, you can change the type of mark (pch), size
 (cex), or color (col) of the plotted points:
 
     plot(GPA ~ SAT.Q, data=ut2000, pch=19, cex=0.5, col='grey')
 
-![](sat_files/figure-markdown_strict/unnamed-chunk-8-1.png)  
-Try `?plot`, `?points`, and `?par` to see some more of the plotting
-options.
+![](sat_files/figure-markdown_strict/unnamed-chunk-8-1.png) Try `?plot`,
+`?points`, and `?par` to see some more of the plotting options.
 
 To compute a correlation coefficient, use the `cor` function:
 
@@ -169,12 +171,12 @@ and GPA, respectively):
 
     pairs(ut2000[,c(1,2,5)])
 
-![](sat_files/figure-markdown_strict/unnamed-chunk-10-1.png)  
-The brackets to the right of our data set, `ut2000[,c(1,2,5)]`, say
-"give me all rows from the 1st, 2nd, and 5th columns." If you wanted,
-say, the first 100 rows of these columns, you'd use
-`ut2000[1:100,c(1,2,5)]`. But because we left the row index blank in the
-command above, R gives us all the rows by default.
+![](sat_files/figure-markdown_strict/unnamed-chunk-10-1.png) The
+brackets to the right of our data set, `ut2000[,c(1,2,5)]`, say "give me
+all rows from the 1st, 2nd, and 5th columns." If you wanted, say, the
+first 100 rows of these columns, you'd use `ut2000[1:100,c(1,2,5)]`. But
+because we left the row index blank in the command above, R gives us all
+the rows by default.
 
 You might find this pairs plot redundant---for example, the plot of
 SAT.V versus GPA (row 1, column 3) contains the same information as the
@@ -184,7 +186,7 @@ in the following flag:
 
     pairs(ut2000[,c(1,2,5)], upper.panel=NULL)
 
-![](sat_files/figure-markdown_strict/unnamed-chunk-11-1.png)  
+![](sat_files/figure-markdown_strict/unnamed-chunk-11-1.png)
 
 ### Lattice plots
 
@@ -196,8 +198,8 @@ command produces one:
 
     xyplot(GPA ~ SAT.Q | School, data=ut2000)
 
-![](sat_files/figure-markdown_strict/unnamed-chunk-12-1.png)  
-The vertical bar (|) should be read as "conditional upon" or "stratified
+![](sat_files/figure-markdown_strict/unnamed-chunk-12-1.png) The
+vertical bar (|) should be read as "conditional upon" or "stratified
 by." In this case, the GPA versus SAT.Q relationship looks broadly
 similar across all colleges.
 
@@ -212,10 +214,11 @@ We can then use these intervals to define a lattice plot.
     ut2000$SATcat = cut(ut2000$SAT.C, breaks=c(0, 1000, 1200, 1400, 1600))
     bwplot(GPA ~ School | SATcat, data=ut2000)
 
-![](sat_files/figure-markdown_strict/unnamed-chunk-13-1.png)  
- This is really ugly because all the axis labels are running together.
-We can rotate the college labels to 45 degrees using the (admittedly
-also ugly) command below:
+![](sat_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+
+This is really ugly because all the axis labels are running together. We
+can rotate the college labels to 45 degrees using the (admittedly also
+ugly) command below:
 
     bwplot(GPA ~ School | SATcat, data=ut2000, scales=list(x=list(rot=45)))
 
