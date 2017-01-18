@@ -1,0 +1,121 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+## Reaction times in video games
+
+Learning goals:  
+* model a numerical outcome in terms of multiple categorical predictors  
+* understand the appropriate use and interpretation of dummy variables and interaction terms
+
+Data files:  
+* [rxntime.csv](rxntime.csv): data on a neuroscience experiment measuring people's reaction time to visual stimuli  
+
+### More than one categorical predictor
+
+We'll start with the reaction-time data set, which is from an experiment run by a British video-game manufacturer in an attempt to calibrate the level of difficulty of certain tasks in the video game.  Subjects in this experiment were presented with a simple "Where's Waldo?"-style visual scene.  The subjects had to find a number (1 or 2) floating somewhere in the scene, to identify the number, and to press the corresponding button as quickly as possible.  The response variable is their reaction time.  You'll need the mosaic library, so make sure to load it first.
+
+```{r, message=FALSE}
+library(mosaic)
+```
+
+```{r}
+rxntime = read.csv('rxntime.csv')
+summary(rxntime)
+```
+
+The variables of interest for us are:  
+* PictureTarget.RT: the subject's reaction time in milliseconds.  
+* Subject: a numerical identifier for the subject undergoing the test.  
+* FarAway: a dummy variable.  Was the number to be identified far away (1) or near (0) in the visual scene?  
+* Littered: the British way of saying whether the scene was cluttered (1) or mostly free of clutter (0).  
+
+First let's look at some plots to show between-group and within-group variation for the three predictors:  
+```{r}
+boxplot(PictureTarget.RT ~ FarAway, data=rxntime)
+boxplot(PictureTarget.RT ~ Littered, data=rxntime)
+boxplot(PictureTarget.RT ~ factor(Subject), data=rxntime)
+```
+
+### Main effects
+
+Our first model will use whether the scene was littered as a predictor:
+```{r}
+lm1 = lm(PictureTarget.RT ~ Littered, data=rxntime)
+```
+
+Remember baseline/offset form: the coefficients of this model are simply a different way of expressing the group means for the littered and unlittered scenes:
+```{r}
+mean(PictureTarget.RT ~ Littered, data=rxntime)
+coef(lm1)
+# Add the baseline and offset to get the second group mean
+506.71042 + 87.46354 
+```
+
+Now we will add a second dummy variable for whether the number to be identified was near or far away:
+```{r}
+lm2 = lm(PictureTarget.RT ~ Littered + FarAway, data=rxntime)
+coef(lm2)
+```
+
+This model says that the predicted "baseline" reaction time (for unlittered scenes with a nearby target) is 481.6 ms.  For scenes that were littered, we'd predict a reaction time 87.5 ms longer than the baseline.  For scenes with a far-away target, we'd predict a reaction time 50.1 ms longer than baseline.  For scenes that are both littered _and_ far away, the model tells us to simply add the sum of the two individual effects:
+```{r}
+87.46354 + 50.13437
+```
+So according to the model, we'd predict these scenes to be 137.6 ms longer than baseline.
+
+For reasons that will become clear in a moment, we refer to the Littered and FarAway coefficients as the "main effects" of the model.
+
+### Interactions
+
+The model we just fit assumed that the Littered and FarAway variables had individual additive effects on the response.  However, what if scenes that are both Littered and FarAway are even harder than we'd expect based on the individual Littered and FarAway effects?  If we think this may be the case, we should consider adding an interaction term to the model:
+```{r}
+lm3 = lm(PictureTarget.RT ~ Littered + FarAway + Littered:FarAway, data=rxntime)
+summary(lm3)
+```
+
+As before, the first two terms are called "main effects."  The last term in the model is an interaction variable, with an estimated coefficient of 39.1.  It allows the joint effect of the two predictors to be different than the sum of the individual (main) effects.
+
+To understand the output, let's work our way through the predictions of the above model based on the fitted coefficients:  
+* Baseline scenes: (Littered=0, FarAway=0): baseline only (491.4 ms)  
+* Littered=1, FarAway=0 scenes: add the baseline and the Littered main effect (491.4 + 67.9 = 559.3 ms)  
+* FarAway=1, Littered=0 scenes: add the baseline and the FarAway main effect (491.4 + 30.6 = 522 ms)  
+* Littered=1, FarAway=1 scenes: add the baseline, both main effects, and the interaction term (491.4 +  67.9 + 30.6 + 39.1 = 629 ms)  
+
+Notice that to get the prediction for scenes that are both littered and far away, we add the baseline, both main effects, and the interaction term.  The resulting predictions match up exactly with the group means we calculate if we stratify the scenes into all four possible combinations of Littered and FarAway:
+```{r}
+mean(PictureTarget.RT ~ Littered + FarAway, data=rxntime)
+```
+
+A reasonable question is: why er with the extra complexity of main effects and interactions if all we're doing is computing the group-wise means for all four combinations of the two variables?
+
+In fact, if we have only these two variables, there isn't really a compelling reason to do so.  However, let's suppose we wanted to add a third variable:
+```{r}
+lm4 = lm(PictureTarget.RT ~ Littered + FarAway + Littered:FarAway + factor(Subject), data=rxntime)
+summary(lm4)
+```
+
+Now we've added subject-level dummy variables to account for between-subject variability, and R-squared has jumped from 13% to 23%.  But we're still assuming that the effect of the Littered and FarAway variables is the same for every subject.  Thus we have 15 parameters to estimate: an intercept/baseline, two main effects for Littered and FarAway, one interaction term, and 11 subject-level dummy variables.  Suppose that instead we were to look at all possible combinations of subject, Littered, and FarAway variables, and compute the groupwise means:
+```{r}
+mean(PictureTarget.RT ~ Littered + FarAway + factor(Subject), data=rxntime)
+```
+
+Now we've got 48 parameters to estimate: the group mean for each combination of 12 subjects and 4 experimental conditions.  Moreover, we're now implicitly assuming that the Littered and FarAway variables affect each person in a different way, rather than all people in the same way.  There's no way to reproduce the output of the model we just fit (`lm4`) by computing group-wise means.
+
+This should convey the power of using dummies and interactions to express how a response variable changes as a function of several grouping variables.  It allows us to be selective: some variables may interact with each other, while other variables have only a "main effect" that holds across the entire data set, regardless of what values the other predictors take.
+
+The choice of which variables fall in which category can be guided both by the data itself and by knowledge of the problem at hand. This is an important modeling decision---one which we'll study carefully.
+
+### Analysis of variance
+
+Finally, what if we wanted to quantify how much each predictor was contributing to the overall explanatory power of the model?  A natural way to do so is to compute the amount by which the addition of each predictor reduces the unpredictable (residual) variation, compared to a model without that predictor.  R's `anova' function computes this for us:
+```{r}
+anova(lm4)
+```
+
+The "Sum Sq" (for sums of squares) column in the one that interests us.  This column is computed by adding the predictors sequentially and asking: by how much did the residual sum of squares drop when this predictor was added to the previous model?  (Remember the variance decomposition here.)  The larger the entry in the "Sum Sq" column, the more that variable improved the predictive ability of the model.  The final entry (Residuals) tells you the residual sums of squares after all variables were added.  This serves as a useful basis for comparison when trying to interpret the magnitude of the other entries in this column.
+
+This breakdown of the sums of squares into its constituent parts is called the "analysis of variance" for the model, or "ANOVA" for short.

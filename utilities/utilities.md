@@ -1,0 +1,116 @@
+---
+layout: page
+---
+
+### Gas consumption versus temperature
+
+In this walk-through, you'll learn how to fit nonlinear models by least
+squares using a simple trick: adding powers (squared, cubed, etc) of the
+original predictor variable. You will also see that new variables can be
+defined in terms of old ones.
+
+Data files:  
+\* [utilities.csv](utilities.csv): monthly gas bill versus temperature
+for a house in Minnesota. Data source: Daniel T. Kaplan, *Statistical
+Modeling: A Fresh Approach*, 2009.
+
+First let's load the mosaic library and read in the utilities data set.
+
+    library(mosaic)
+    utilities = read.csv('utilities.csv', header=TRUE)
+
+As usual, we'll look at a quick summary of the variables:
+
+    summary(utilities)
+
+    ##      month             day             year           temp      
+    ##  Min.   : 1.000   Min.   :23.00   Min.   :1999   Min.   : 9.00  
+    ##  1st Qu.: 4.000   1st Qu.:26.00   1st Qu.:2002   1st Qu.:30.00  
+    ##  Median : 7.000   Median :26.00   Median :2005   Median :51.00  
+    ##  Mean   : 6.564   Mean   :26.59   Mean   :2005   Mean   :48.66  
+    ##  3rd Qu.: 9.000   3rd Qu.:28.00   3rd Qu.:2007   3rd Qu.:69.00  
+    ##  Max.   :12.000   Max.   :36.00   Max.   :2010   Max.   :78.00  
+    ##                                                                 
+    ##       kwh            ccf          thermsPerDay    billingDays   
+    ##  Min.   : 160   Min.   :  0.00   Min.   :0.000   Min.   :10.00  
+    ##  1st Qu.: 583   1st Qu.: 16.00   1st Qu.:0.500   1st Qu.:29.00  
+    ##  Median : 790   Median : 60.00   Median :2.000   Median :30.00  
+    ##  Mean   : 751   Mean   : 83.44   Mean   :2.746   Mean   :30.29  
+    ##  3rd Qu.: 893   3rd Qu.:144.00   3rd Qu.:4.700   3rd Qu.:32.00  
+    ##  Max.   :1213   Max.   :242.00   Max.   :8.100   Max.   :36.00  
+    ##                                                                 
+    ##    totalbill         gasbill          elecbill     
+    ##  Min.   : 31.55   Min.   :  3.42   Min.   : 17.43  
+    ##  1st Qu.:106.65   1st Qu.: 23.42   1st Qu.: 53.56  
+    ##  Median :134.50   Median : 55.74   Median : 78.82  
+    ##  Mean   :157.74   Mean   : 81.24   Mean   : 76.67  
+    ##  3rd Qu.:192.67   3rd Qu.:124.18   3rd Qu.: 94.51  
+    ##  Max.   :332.09   Max.   :240.90   Max.   :152.20  
+    ##                                                    
+    ##                          notes    
+    ##                             :102  
+    ##  housesitters               :  4  
+    ##  empty house                :  2  
+    ##  24.05 interim elec refund  :  1  
+    ##  5.46 credit for cost of gas:  1  
+    ##  9.57 escrow refund         :  1  
+    ##  (Other)                    :  6
+
+### Defining a new variable in terms of existing ones
+
+Our goal will be to model the monthly gas bill in terms of temperature.
+There's a wrinkle here, however: different billing periods have
+different numbers of billing days:
+
+    hist(utilities$billingDays, breaks=20)
+
+![](utilities_files/figure-markdown_strict/unnamed-chunk-3-1.png)  
+ Thus we probably want to be measuring gas usage per day, rather than to
+the total over each billing period. Let's define a new variable, called
+daily.average.gasbill:
+
+    utilities$daily.average.gasbill = utilities$gasbill/utilities$billingDays
+
+Now let's plot the new variable we've created versus temperature, fit a
+linear model, and add the line to the plot.
+
+    plot(daily.average.gasbill ~ temp, data=utilities)
+    lm1=lm(daily.average.gasbill ~ temp, data=utilities)
+    points(fitted(lm1)~temp, data=utilities, col='red', pch=19)
+    abline(lm1)
+
+![](utilities_files/figure-markdown_strict/unnamed-chunk-5-1.png)  
+ This model doesn't do a very good job: we're fitting a linear model to
+obviously nonlinear data. You could see this nonlinearity on the
+original plot, above. You could also see it on a residual plot, where
+it's obvious there is still some systematic variation in the residuals
+as a function of the predictor variable.
+
+    plot(resid(lm1) ~ temp, data=utilities)
+
+![](utilities_files/figure-markdown_strict/unnamed-chunk-6-1.png)  
+ \#\#\# Polynomial regression models
+
+One approach to address this shortcoming is to fit a parabola: that is,
+y versus x and x^2.
+
+    # Fit a model with a quadratic term:
+    lm2=lm(daily.average.gasbill ~ temp + I(temp^2), data=utilities)
+    # Replot the data and added the fitted values
+    plot(daily.average.gasbill ~ temp, data=utilities)
+    points(fitted(lm2)~temp, data=utilities, col='blue', pch=19)
+
+![](utilities_files/figure-markdown_strict/unnamed-chunk-7-1.png)  
+ In the model statement, the `I(temp^2)` is the way we tell R to treat
+temperature-squared as an additional variable in the model. We could
+also add higher powers of temperature, although the quadratic fit looks
+sensible here.
+
+If you want to draw a nice smooth curve, you can plug in the
+coefficients of the model directly to the `curve` function:
+
+    plot(daily.average.gasbill ~ temp, data=utilities)
+    mybeta = coef(lm2)
+    curve(mybeta[1] + mybeta[2]*x + mybeta[3]*x^2, col='blue', add=TRUE)
+
+![](utilities_files/figure-markdown_strict/unnamed-chunk-8-1.png)

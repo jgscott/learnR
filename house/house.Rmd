@@ -1,0 +1,196 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+## House prices
+
+Learning goals:  
+* fit regression models with a single numerical predictor and multiple categorical predictors    
+* correctly interpret dummy variables and interaction terms in linear regression models   
+* correctly interpret an ANOVA table in a model with correlated predictors     
+
+Data files:  
+* [house.csv](house.csv): sales prices of houses in Kansas City
+
+
+### Aggregation paradoxes in regression 
+
+Let's start by loading the mosaic library, reading in the house-price data set and summarizing the variables.
+
+```{r, echo=FALSE}
+house = read.csv("house.csv", header=TRUE)
+```
+
+```{r, message=FALSE}
+library(mosaic)
+```
+
+```{r}
+summary(house)
+```
+
+Although there are a lot of variables in this data set, we will focus on four:
+* price: the sales price of the house.  
+* sqrt: the size of the house in square feet.  
+* nbhd: a categorical variable indicating which of three neighborhoods the house is in.    
+* brick: a categorical variable indicating whether the house is made of brick.  
+
+We'll begin by fitting a regression line for the price of the house in terms of its square footage:  
+```{r}
+plot(price~sqft, data=house, pch=19)
+lm0 = lm(price~sqft, data=house)
+abline(lm0)
+coef(lm0)
+```
+
+According to the estimated slope of this model, each additional square foot costs roughly $70.
+
+However, the following two plots might give you cause for concern about this answer.
+```{r}
+bwplot(price ~ nbhd, data=house)
+bwplot(sqft ~ nbhd, data=house)
+```
+
+We see that the both the prices and sizes of houses differ systematically across neighborhoods.  Might the neighborhood be a confounding variable that distorts our estimate of the size-versus-price relationship?  For example, some neighborhoods might be more desirable because of their location, not merely because of the size of the houses there.
+
+Let's look at the neighborhoods individually to get a sense of whether this is plausible.  First, neighborhood 1:
+```{r}
+plot(price~sqft, data=subset(house, nbhd=='nbhd01'), pch=19)
+lm1 = lm(price~sqft, data=subset(house, nbhd=='nbhd01'))
+abline(lm1)
+coef(lm1)
+```
+
+Within neighborhood 1 alone, it looks like each additional square costs about $40.  How about neighborhood 2?
+```{r}
+plot(price~sqft, data=subset(house, nbhd=='nbhd02'), pch=19)
+lm2 = lm(price~sqft, data=subset(house, nbhd=='nbhd02'))
+abline(lm2)
+coef(lm2)
+```
+
+Here the size premium is about $50 per square foot.  And neighborhood 3?
+```{r}
+plot(price~sqft, data=subset(house, nbhd=='nbhd03'), pch=19)
+lm3 = lm(price~sqft, data=subset(house, nbhd=='nbhd03'))
+abline(lm3)
+coef(lm3)
+```
+
+Also about $50 per square foot.  So let's recap:  
+* In each individual neighborhood, the price of an additional square foot is between 40 and 50 dollars.  
+* Yet for all three neighborhoods together, the price of an additional square foot is 70 dollars.  
+
+This is a classic example of an aggregation paradox: that is, something which appears to hold for a group (all three neighborhoods together) simultaneously fails to hold for the individual members of that group.  The following picture may give you some intuition for what's going on here.  We will plot the points for the individual neighborhoods in different colors:
+```{r}
+# Plot the whole data set
+plot(price~sqft, data=house)
+# Color the points and add the line for nbhd 1
+points(price~sqft, data=subset(house, nbhd=='nbhd01'), pch=19, col='blue')
+abline(lm1, col='blue')
+# Color the points and add the line for nbhd 2
+points(price~sqft, data=subset(house, nbhd=='nbhd02'), pch=19, col='red')
+abline(lm2, col='red')
+# Color the points and add the line for nbhd 3
+points(price~sqft, data=subset(house, nbhd=='nbhd03'), pch=19, col='grey')
+abline(lm3, col='grey')
+# Finally, add the "global" line
+abline(lm0, lwd=4)
+```
+
+You can see that the lines for the individual neighborhoods are all less steep than the overall line for the aggregrated data set.  This suggests that neighborhood is indeed a confounder for the price-versus-size relationship.
+
+
+### Dummy variables
+
+To resolve the aggregation paradox in the house-price data set, we applied a "split and fit" strategy:  
+1) Split the data into subsets, one for each group. 
+2) Fit a separate model to each subset.  
+
+With only a single grouping variable, the "split-and-fit" strategy often works just fine.  But with multiple grouping variables, it gets cumbersome quickly.  Therefore, we'll learn an alternative strategy that will prove to be much more useful than split-and-fit: dummy variables and interactions.
+
+Remember that a dummy variable is a 0/1 indicator of membership in a particular group.  Here's how we introduce dummy variables in a regression model.
+```{r}
+lm4 = lm(price ~ sqft + nbhd, data=house)
+coef(lm4)
+```
+
+This output says that there are three different lines for the three different neighborhoods:  
+* Neighborhood 1 (the baseline): price = 21241 + 46.39 \* sqft  
+* Neighborhood 2: price = (21241 + 10569) + 46.39 \* sqft  
+* Neighborhood 3: price = (21241 + 41535) + 46.39 \* sqft  
+
+That is, three different lines with three different intercepts and the same slope (46.39).  The coefficient labeled "(Intercept)" is the intercept for the baseline category (in this case, neighborhood 1).  The coefficients on the nbhd02 and nbhd03 dummy variables are the offsets.
+
+### Interactions
+
+If we believe that the price-versus-size relationship is different for each neighborhood, we may want to introduce an interaction term:
+```{r}
+lm5 = lm(price ~ sqft + nbhd + nbhd:sqft, data=house)
+coef(lm5)
+```
+
+Now we're allowing both the slope and intercept to differ from neighborhood to neighborhood.  The rules are:
+* The coefficients on the dummy variables get added to the baseline intercept to form each neighborhood-specific intercept.  
+* The coefficients on the interaction terms get added to the baseline slope to form each neighborhood-specific slope.
+
+Thus our model above output says that:  
+* Neighborhood 1 (the baseline): price = 32906 + 40.30 \* sqft  
+* Neighborhood 2: price = (32906 - 7224) + (40.30 + 9.13) \* sqft  
+* Neighborhood 3: price = (32906 + 23753) + (40.30 + 9.02)  \* sqft  
+
+
+### Multiple categorical predictors
+
+Once you've got the idea of dummy variables and interactions, you can add as many categorical variables as you want.  (Word to the wise: doing so will not necessarily be a good idea!)  For example, try interpreting the coefficients for the following model:
+```{r}
+lm6 = lm(price ~ sqft + nbhd + brick + brick:sqft, data=house)
+coef(lm6)
+```
+
+### ANOVA in the presence of correlated predictors  
+
+In the walkthrough on [reaction time in video games](http://jgscott.github.io/teaching/r/rxntime/rxntime.html), we learned that an analysis of variance can be used to partition variation in the outcome among the individual predictor variables in a regression model.  An ANOVA table is constructed by adding variables to the model sequentially, and tracking the amount by which the predictive ability of the model improves at each stage.  We measure the improvement by change in predictable variation (PV), or equivalently the reduction in the residual sums of squares (unpredictable variation, or UV).
+
+If we run an analysis of variance on our final model above, we get the following table.  We'll divide the sales price by $1000 (so that an outcome of 200 corresponds to a $200,000 sales price), just to make the numbers in our ANOVA table a little bit easier to interpret:
+```{r}
+lm6 = lm(price/1000 ~ sqft + nbhd + brick + brick:sqft, data=house)
+anova(lm6)
+```
+It looks as though the neighborhood predicts the most variation (change in PV = 34773), followed by sqft (delta-PV = 28036) and then brick (delta-PV = 9646).
+
+But what if we arbitrarily change the order in which we add the variables?  
+```{r}
+lm6alt = lm(price/1000 ~ brick + nbhd + sqft + brick:sqft, data=house)
+anova(lm6alt)
+```
+
+Now the importance of brick and neighborhood looks much larger, and the importance of size much smaller.  But the coefficients in the two models are exactly the same:
+```{r}
+coef(lm6)
+coef(lm6alt)
+```
+
+When the predictor variables are correlated with each other, an analysis of variance for a regression model---but not the model itself---will depend upon the order in which those variables are added.  This is because the first predictor your add greedily takes credit for all the information it shares in common with any other predictors that are subsequently added to the model.  
+
+The moral of the story is that there is no such thing as "the" ANOVA table for a regression model with correlated predictors.  There are multiple ANOVA tables, one for each possible ordering of the variables.  Thus there is no unique way to unambiguously assign credit to individual variables in the model.
+
+### Advanced plotting (optional)
+
+You can use a lattice plot to reproduce my "split and fit" strategy from above: that is, split the data into subsets and fit a line to each one.  Here's one way that involves defining a custom "panel function" that is used by `xyplot`.
+
+```{r}
+# Define a custom plotting function to be applied to each panel
+plot_with_lines = function(x, y) {
+         panel.xyplot(x, y)
+         model_for_panel = lm(y~x)
+         panel.abline(model_for_panel)         
+}
+
+# Pass this custom plotting function to xyplot
+xyplot(price ~ sqft | nbhd, data=house, panel=plot_with_lines)
+```
+

@@ -1,0 +1,123 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+### Asking prices of pickup trucks.  
+
+In this walk-through, you'll learn simple linear regression: that is, how to fit a straight line by ordinary least squares.  You will also learn how to summarize the results of a simple linear regression model.
+
+Data files:  
+* [pickup.csv](pickup.csv): details on pickup trucks sold on Craiglist in Austin.  
+
+
+### Warm-up
+
+First load the mosaic library and read in the data. For the sake of completeness here's the command-line version; you should probably use the RStudio Import Dataset button.
+```{r, message=FALSE}
+library(mosaic)
+pickup=read.csv('pickup.csv', header=TRUE)
+summary(pickup)
+```
+
+Let's warm up by looking at a histogram of the asking prices for each pickup and quantify the dispersion in the distribution by quoting an 80% coverage interval.
+
+```{r}
+hist(pickup$price, breaks=20)
+endpoints80 = qdata(pickup$price, p=c(0.1, 0.9))
+endpoints80
+```
+The `endpoints80` variable is a data frame containing the quantiles and corresponding probabilities.
+
+You can now superimpose those endpoints on the histogram to show the coverage interval.
+```{r}
+hist(pickup$price, breaks=20, col='lightblue')
+abline(v=endpoints80$quantile, col='red')
+```
+
+Notice the color we've added to our lives.
+
+
+### Fitting a straight line by ordinary least squares (OLS)
+
+Next, let's make a scatterplot of asking price versus mileage.
+```{r}
+plot(price~miles, data=pickup)
+```
+
+Notice the downward trend.  We'll use the `lm` function to fit a trend line by ordinary least squares, to quantify the steepness of the decline.
+```{r}
+lm(price~miles, data=pickup)
+```
+
+This command just returns some information about the model to the console.  But it's better if we save the result, so that we can use other functions to extract information about the fitted model.
+```{r}
+model1 = lm(price~miles, data=pickup)
+coef(model1)
+```
+The second (slope) coefficient summarizes the downward trend of price versus mileage.
+
+We can also use the fitted model object (which we called `model1`) to add the fitted trend-line to the scatter plot, like this:
+```{r}
+plot(price~miles, data=pickup)
+abline(model1)
+```
+
+### Plug-in prediction
+
+One simple thing we can use the model to do is to make plug-in predictions.  Let's say we had saw pickups for sale: one with 25000 miles, one with 50000 miles, and one with 100000 miles.  What should we expect their asking price to be?  We could do this by hand:
+```{r}
+new_pickups = c(25000,50000,100000)
+yhat = 14419.3762 + (-0.0643)*new_pickups
+yhat
+```
+
+Or we could pass in a new data frame to the `predict` function:
+```{r}
+new_pickups = data.frame(miles=c(25000,50000,100000))
+predict(model1, newdata=new_pickups)
+```
+The new data frame must have the same predictors that the original data frame did.  These two ways of doing plug-in prediction given the same answer, but for more complicated settings, the second way will be far easier (as we'll see later).
+
+
+### Residual summaries and plots
+
+We can extract the fitted values and residuals of the model like this:
+```{r}
+fitted(model1)
+resid(model1)
+```
+
+A very common model diagnostic is to plot the residuals versus the original x variable:
+```{r}
+plot(resid(model1) ~ miles, data=pickup)
+```
+
+There is no systematic trend left in the residuals, which is just as it should be if we've done a good job modeling the response using the predictor.
+
+
+### Statistical adjustment (taking the X-ness out of Y)  
+
+Which pickup looks like the best deal, adjusting for mileage?  We could assess this by finding the minimum residual, which is the truck whose asking price is the farthest below its expected cost, given its mileage.  We can get the minimum residual itself with the `min` function, and the _index_ of the minimum residual (i.e. which case in the data set) using the `which.min` function:
+```{r}
+min(resid(model1))
+which.min(resid(model1))
+```
+It looks like the 44th pickup in the data set is the best price, adjusting for mileage:
+```{r}
+pickup[44,]
+```
+It's a 1993 GMC with 90000 miles on it, priced at only $1900.  It's probably cheap because it's old.
+
+
+### Quantifying residual variation  
+
+Finally, how much variation is left in the residuals, compared to the original variation in price?
+```{r}
+sd(pickup$price)
+sd(fitted(model1))
+sd(resid(model1))
+```
+This quantifies the information content of the model: that is, how much our uncertainty in a truck's price is reduced by knowing its mileage, and how much remains in the residuals.  

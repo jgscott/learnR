@@ -1,0 +1,87 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+### Time series basics
+
+In this walk-through, you'll learn two simple techniques for handling the most common kinds of variation in time-series analysis:    
+* regressing on a time index to model trends.  
+* adding dummy variables to handle seasonal variation.    
+
+Data files:  
+* [maunaloa.csv](maunaloa.csv): Atmospheric CO2 concentrations (measured in parts per million) derived from air samples collected at Mauna Loa Observatory, Hawaii.  Source: Carbon Dioxide Research Group, Scripps Institution of Oceanography (SIO), University of California, La Jolla.  [Available here.](ftp://cdiac.esd.ornl.gov/pub/maunaloa-co2/).
+
+First we'll load the required libraries and data set.
+```{r, message=FALSE}
+library(mosaic)
+maunaloa = read.csv("maunaloa.csv", header=TRUE)
+summary(maunaloa)
+```
+
+We have data on the year and month of measurement (running from 1958 to 2003), along with the CO2 measurement itself.  Notice that we have 7 NAs in the CO2 column, which correspond to months in which the measurements were missing or judged unreliable.
+
+### Modeling linear trends
+
+We will make a line plot of CO2 over time.  Because the observations are ordered temporally in the data set, we don't need to specify an x variable for plotting here.  R will just plot things in order:
+```{r}
+plot(maunaloa$co2, type='l')
+```
+
+The plot has two obvious features: it goes up over time, and it has a noticeable "zig-zag" pattern on its way up.  To build a model for CO2 concentration that addresses the trend, we will create a time index, starting at 1 and ending at N (where N is the number of rows in the data set).
+
+```{r}
+maunaloa$TimeIndex = 1:nrow(maunaloa)
+head(maunaloa)
+```
+
+This "time index" variable is now available to be used as a predictor in a regression model:
+```{r}
+lm1 = lm(co2 ~ TimeIndex, data=maunaloa)
+summary(lm1)
+```
+
+The coefficient on the time index is 0.134.  Since the unit of time here is one month, we interpret this as an estimated rise in atmospheric carbon concentration of 0.134 PPM per month, or about 1.6 PPM per year.
+
+You'll notice that the linear trend certainly isn't a perfect fit to the data:
+```{r}
+plot(maunaloa$co2, type='l')
+abline(lm1, col='red')
+```
+
+It underpredicts both at the beginning and end of the data set, suggesting the trend is slightly nonlinear.  Nonetheless, as a simplified description of the average yearly rise in atmospheric CO2, we might be perfectly happy with the linear approximation.
+
+
+### Modeling seasonal variation
+
+The other obvious feature of the original time-series plot was the zig-zag pattern.  We can see the cause for this if we look at the residuals of the trend-only model stratified by month:
+```{r}
+bwplot(resid(lm1) ~ Month, data=maunaloa)
+```
+
+One annoying aspect of this plot is that the months aren't in order!  We can fix this by re-ordering the levels of the "Month" factor in the data set:
+```{r}
+levels(maunaloa$Month)
+month_order = c('Jan.', 'Feb.', 'March', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.')
+maunaloa$Month = factor(maunaloa$Month, levels=month_order)
+bwplot(resid(lm1) ~ Month, data=maunaloa)
+```
+
+Now the boxplot has the months in the correct calendar order, and we can see the obvious seasonal pattern in the residuals.  To address this, we will introduce monthly dummy variables:
+
+```{r}
+lm2 = lm(co2 ~ TimeIndex + Month, data=maunaloa)
+summary(lm2)
+```
+
+To show the fitted values, we will use the "predict" function on the original data set, so that the missing values are filled using plug-in prediction:
+```{r}
+plot(co2 ~ TimeIndex, data=maunaloa, type='l')
+co2_fitted = predict(lm2, newdata=maunaloa)  # predict to fill in missing values
+lines(co2_fitted ~ TimeIndex, data=maunaloa, col='blue')
+```
+
+Our fitted values inherit the deficit of assuming a linear trend, but otherwise do a pretty good job at describing the variation in CO2 levels.
+

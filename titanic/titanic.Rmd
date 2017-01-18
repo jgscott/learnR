@@ -1,0 +1,148 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+
+# Contingency tables 
+
+In this walk-through, you will learn a few tools for summarizing categorical data using contingency tables.  You will also learn two other basic data-handling skills:  
+- to look at subsets of a data set defined by conditioning on a specific variable, using the `subset` function, and  
+- to turn a numerical variable into a categorical variable using the `cut` function.
+
+Data files:  
+* [TitanicSurvival.csv](TitanicSurvival.csv)  
+
+First download the TitanicSurvival.csv file and read it in. You can use RStudio's Import Dataset button, or the read.csv command:
+```{r}
+TitanicSurvival = read.csv('TitanicSurvival.csv')
+```
+
+Let's look at the first few lines of the data set, which we can do using the `head` function.
+```{r}
+head(TitanicSurvival)
+```
+We can see the name of each passenger and whether they survived, along with their age, sex, and cabin class.
+
+Next, we'll use the xtabs (for cross-tabulate) function to make some contingency tables.  We can stratify by survival status and sex:
+```{r}
+xtabs(~survived + sex, data=TitanicSurvival)
+```
+
+Or by passenger class:
+```{r}
+xtabs(~survived + passengerClass, data=TitanicSurvival)
+```
+
+Or by all three, to yield a multi-way table:
+```{r}
+xtabs(~survived + passengerClass + sex, data=TitanicSurvival)
+```
+Notice how this is presented as a set of two-way tables, given the constraints of the two-dimensional screen.  
+
+
+We can also turn a table of counts into a table of proportions using the `prop.table` command.  
+```{r}
+table1 = xtabs(~survived + sex, data=TitanicSurvival)
+prop.table(table1, margin=1)
+```
+The first command says to store the table of raw counts in a variable called `table1`.  The second says to turn the counts into proportions, standardizing so that the rows (margin=1) sum to 1.  
+
+We can also standardize along the columns.  In fact, this probably makes more sense here.  We're thinking of sex as the predictor and survival as the response, and therefore we want to see how the relative chances of survival changes for men versus women:
+```{r}
+prop.table(table1, margin=2)
+```
+
+### Relative risk
+
+From the last table above (where the columns sum to 1), we can compute the relative risk and odds ratio.  First, the relative risk.  The risk of dying for men is the 1st row, second column of the table.  We can access this number by explicitly referring to the row and column numbers inside brackets, like this:
+```{r}
+risk_table = prop.table(table1, margin=2)
+risk_men = risk_table[1,2]
+risk_men
+```
+Or about 81%.
+
+Similarly, the risk of dying for women is the first row, first column of the standardized table:
+```{r}
+risk_women = risk_table[1,1]
+risk_women
+```
+Or about 27%.
+
+Now we can compute the relative risk from these two quantities:
+```{r}
+relative_risk = risk_men/risk_women
+relative_risk
+```
+It looks like men were about three times as likely to die on the Titanic as women.
+
+
+
+### Discretizing a variable into categories
+
+Our data set on the Titanic also has a numerical variable called `age`, measured in years.  Incidentally, this piece of information is missing for 263 of the passengers:
+```{r}
+summary(TitanicSurvival$age)
+```
+The age of these 263 people is shown as NA, for "not available."
+
+Let's say we want to build a table of relative survival rates for children (i.e. those 17 and younger).  This requires that we convert the age variable into categories.
+
+We can do this using the `cut` function, like so:
+```{r}
+TitanicSurvival$AgeCategory = cut(TitanicSurvival$age, breaks=c(0,17,80))
+```
+This expression has a lot going on.  Focus on the righthand side first: we've cut the age variable in the TitanicSurvival data frame, choosing 0, 17, and 80 as the endpoints of our intervals.  We chose 80, because that was the maximum age in the data set; and 0, because that was slightly lower than the lowest age in the data set (the intervals are right-inclusive by default).
+
+We've then taken the result of the right-hand side and stored it in a new variable called AgeCategory, which now lives in the TitanicSurvival data frame.  If we ask for a new summary of the TitanicSurvival data set, we'll see the fruits of our labor:
+```{r}
+summary(TitanicSurvival)
+```
+The new variable we've created, AgeCategory, tells us whether someone is a child or adult.
+
+Let's now use this to build a table:
+```{r}
+xtabs(~survived + AgeCategory, data=TitanicSurvival)
+```
+Many more children than adults survived.
+
+### Subsets of the data
+
+R makes it easy to condition on a variable in looking at various data summaries.  For example, let's say we want to look at survival status versus age for males alone.  We can do this using the subset function:
+```{r}
+TitanicMales = subset(TitanicSurvival, sex=="male")
+```
+This command creates a subset of the original data set containing all the males and none of the females.  Note two things about the right-hand side of this expression:  
+1. We put "male" in quotation marks, because sex is a categorical variable.
+2. The double-equals sign `==` is used to check for equality, as opposed to the single equals sign `=` used in variable assignment.
+
+Let's now build a table from this subset:
+```{r}
+xtabs(~survived + AgeCategory, data=TitanicMales)
+```
+Many more children than adults survived.
+
+We could have actually accomplished the same thing in a single line, by chaining together the two statements:
+```{r}
+xtabs(~survived + AgeCategory, data=subset(TitanicSurvival, sex=="male"))
+xtabs(~survived + AgeCategory, data=subset(TitanicSurvival, sex=="female"))
+```
+
+
+Finally, we can also define subsets in terms of a numerical variable like age:
+```{r}
+xtabs(~survived + sex, data=subset(TitanicSurvival, age < 18))
+xtabs(~survived + passengerClass, data=subset(TitanicSurvival, age >= 18))
+```
+ We do not put 18 in quotation marks, because age is a numerical variable.
+
+### Mosaic plot
+
+A mosaic plot can help to visualize multiway tables.
+```{r}
+mosaicplot(~ sex + AgeCategory + survived, data=TitanicSurvival)
+```
+The area of each box tells you what fraction of cases fall into the corresponding cell of the contingency table.  From this plot, it's clear that adult male passengers of the Titanic died in far higher proportions than any other category of person.

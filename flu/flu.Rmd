@@ -1,0 +1,94 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+## Predictive models for flu activity: Google flu trends  
+
+In this walk-through, you'll build and test a predictive model using forward and backward stepwise selection.
+
+The data you'll look at contain weekly data from the Centers for Disease Control on the number of influenza-like illnesses reported in the south-eastern United States.  This column is labeled "TILI" in the two data files below.  The data run from 2008 through the last week of 2011.
+
+In addition, you have information on 86 flu-related search terms from Google's databases.  Some are obvious ("how.long.does.flu.last"); some tug at the heart a bit ("child.temperature"); a handful are funny ("can.dogs.get.the.flu").  Each entry indicates how often someone Googled that phrase during that particular week.  The units here are standard deviations above the mean for that particular search string (or any search string containing the given string).  Thus a positive number indicates that more people Googled that phrase in that particular week than they did in an average week.
+
+Data files:  
+* [flu.csv](flu.csv): data from 2008 through 2011.    
+
+As usual, load the mosaic library and the data set.
+```{r, message=FALSE}
+library(mosaic)
+flu = read.csv("flu.csv", header=TRUE)
+names(flu)
+```
+
+### Building and checking a predictive model
+
+Let's plot the outcome variable over time and compare this to one of the predictors:
+```{r}
+plot(cdcflu~week, data=flu)
+plot(over.the.counter.flu.medicine~week, data=flu)
+```
+
+It looks like the search terms will be useful here.  Let's do three things:
+1) Split the data into a training and testing set, for the purpose of building and testing a predictive model for flu activity.  
+2) Fit a model to the training set.  
+3) Make predictions on the testing set and check our performance.  
+
+We first need to take care of a minor pre-processing step: separating the "week" variable from the data.  We don't want R thinking "week" is a variable to be used for prediction when we build a model.
+```{r}
+flu_week = flu[,1]
+flu = flu[,-1]
+```
+
+First let's create the training and testing sets.  There are 208 data points in the sample; let's use the last 26 of them (6 months) as a testing set. We'll use the `head` and `tail` functions to take the first 182 and last 26 weeks, respectively.
+```{r}
+flu_train = head(flu, 182)
+flu_test = tail(flu, 26)
+```
+
+Now let's fit a model to `flu_train` and make predictions:
+```{r}
+lm1 = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine + treat.a.fever, data=flu_train)
+yhat_test = predict(lm1, newdata=flu_test)
+```
+
+Finally, let's calculate the prediction error we make on the test set:
+```{r}
+plot(yhat_test, flu_test$cdcflu)
+# Calculate correlation and root mean-squared error
+cor(yhat_test, flu_test$cdcflu)
+RMSE = sqrt(mean( (yhat_test-flu_test$cdcflu)^2))
+RMSE
+```
+
+### Using stepwise selection
+
+A natural question is: can we do better than this simple three-variable model?  We'll use every search term in the data set.  In R, the `.' in a formula statement means "use every variable not otherwise named."
+
+```{r}
+lm_all = lm(cdcflu ~ ., data=flu_train)
+yhat_all = predict(lm_all, newdata=flu_test)
+cor(yhat_all, flu_test$cdcflu)
+```
+
+
+A natural question is: can we do at least as well (or even better!) with a simpler model?  Let's use stepwise selection selection to check:
+```{r}
+lm_step = step(lm_all, direction='both', trace=0)
+summary(lm_step)
+yhat_step = predict(lm_step, newdata=flu_test)
+```
+
+```{r}
+cor(yhat_step, flu_test$cdcflu)
+```
+
+We can also compare the sizes of the two models:
+```{r}
+length(coef(lm_all))
+length(coef(lm_step))
+```
+
+We use many fewer predictors in the stepwise-selected model, but get predictions that are just as good (or even a tiny bit better) than the full model.  

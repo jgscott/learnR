@@ -1,0 +1,27 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+### Bootstrapping
+
+In this walk-through, you'll learn about bootstrapping, a useful technique for quantifying uncertainty in statistical models.  Bootstrapping is known as a "resampling" technique.  It leverages the power of modern computers to simulate a sampling distribution by resampling from your data set.
+
+Data files:  
+* [utilities.csv](utilities.csv): monthly gas bill versus temperature for a house in Minnesota.  
+
+First let's load the mosaic library and read in the utilities data set.
+```{r, message=FALSE}
+library(mosaic)
+utilities = read.csv('utilities.csv', header=TRUE)
+```
+
+A quick summary:
+```{r}
+summary(utilities)
+```
+
+
+
