@@ -1,15 +1,12 @@
----
-layout: post
----
-
 In this walk-through, you'll learn how to measure and visualize
 dispersion of a single quantitative variable. You will also learn how to
 change some of the default plot settings in R, like changing the axis
 labels or the number of breaks in a histogram.
 
 Data files:  
-\* [citytemps.csv](citytemps.csv): daily average temperatures in San
-Diego, CA and Rapid City, SD.
+\*
+[citytemps.csv](http://jgscott.github.io/teaching/data/citytemps.csv):
+daily average temperatures in San Diego, CA and Rapid City, SD.
 
 ### Preliminary steps
 
