@@ -1,7 +1,3 @@
----
-layout: page
----
-
 Contingency tables
 ==================
 
@@ -14,7 +10,8 @@ variable, using the `subset` function, and
 `cut` function.
 
 Data files:  
-\* [TitanicSurvival.csv](TitanicSurvival.csv)
+\*
+[TitanicSurvival.csv](http://jgscott.github.io/teaching/data/TitanicSurvival.csv)
 
 First download the TitanicSurvival.csv file and read it in. You can use
 RStudio's Import Dataset button, or the read.csv command:
@@ -140,24 +137,6 @@ Now we can compute the relative risk from these two quantities:
 It looks like men were about three times as likely to die on the Titanic
 as women.
 
-<!-- ### Odds ratio -->
-<!-- We can compute the odds ratio in a similar way.  First let's compute the odds of dying for both men and women, remembering that the relevant table looks like this: -->
-<!-- ``` -->
-<!--         sex -->
-<!-- survived    female      male -->
-<!--      no  0.2725322 0.8090154 -->
-<!--      yes 0.7274678 0.1909846 -->
-<!-- ``` -->
-<!-- Let's store the odds of dying for each sex in new variables: -->
-<!-- ```{r} -->
-<!-- odds_men = risk_table[1,2]/risk_table[2,2] -->
-<!-- odds_women = risk_table[1,1]/risk_table[2,1] -->
-<!-- ``` -->
-<!-- ```{r} -->
-<!-- odds_ratio = odds_men/odds_women -->
-<!-- odds_ratio -->
-<!-- ``` -->
-<!-- An odds ratio of about 11.3 quantifies the extent to which males were more likely to die than females. -->
 ### Discretizing a variable into categories
 
 Our data set on the Titanic also has a numerical variable called `age`,
