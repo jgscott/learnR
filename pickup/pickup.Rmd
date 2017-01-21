@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ### Asking prices of pickup trucks.  
@@ -10,7 +8,7 @@ output:
 In this walk-through, you'll learn simple linear regression: that is, how to fit a straight line by ordinary least squares.  You will also learn how to summarize the results of a simple linear regression model.
 
 Data files:  
-* [pickup.csv](pickup.csv): details on pickup trucks sold on Craiglist in Austin.  
+* [pickup.csv](http://jgscott.github.io/teaching/data/pickup.csv): details on pickup trucks sold on Craiglist in Austin.  
 
 
 ### Warm-up
@@ -52,7 +50,7 @@ Notice the downward trend.  We'll use the `lm` function to fit a trend line by o
 lm(price~miles, data=pickup)
 ```
 
-This command just returns some information about the model to the console.  But it's better if we save the result, so that we can use other functions to extract information about the fitted model.
+This command just returns some information about the model to the console.  But it's better if we save the result, so that we can use other functions to extract information about the fitted model.  The commands below save the fitted linear model in an object called "model1", and the use the "coef" function to extract the coefficients of the model from this saved object.  
 ```{r}
 model1 = lm(price~miles, data=pickup)
 coef(model1)
@@ -67,14 +65,14 @@ abline(model1)
 
 ### Plug-in prediction
 
-One simple thing we can use the model to do is to make plug-in predictions.  Let's say we had saw pickups for sale: one with 25000 miles, one with 50000 miles, and one with 100000 miles.  What should we expect their asking price to be?  We could do this by hand:
+One simple thing we can use the model to do is to make plug-in predictions.  Let's say we had seen three pickups for sale: one with 25000 miles, one with 50000 miles, and one with 100000 miles.  What should we expect their asking prices to be?  We could do this by hand:
 ```{r}
 new_pickups = c(25000,50000,100000)
 yhat = 14419.3762 + (-0.0643)*new_pickups
 yhat
 ```
 
-Or we could pass in a new data frame to the `predict` function:
+Or we could pass in a new data frame to the `predict` function.  The commands below create a new data frame with the "miles" variable in it, and then pass this data frame to the "predict" function:
 ```{r}
 new_pickups = data.frame(miles=c(25000,50000,100000))
 predict(model1, newdata=new_pickups)

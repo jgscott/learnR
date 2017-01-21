@@ -1,7 +1,3 @@
----
-layout: page
----
-
 ### Gas consumption versus temperature
 
 In this walk-through, you'll learn how to fit nonlinear models by least
@@ -10,9 +6,11 @@ original predictor variable. You will also see that new variables can be
 defined in terms of old ones.
 
 Data files:  
-\* [utilities.csv](utilities.csv): monthly gas bill versus temperature
-for a house in Minnesota. Data source: Daniel T. Kaplan, *Statistical
-Modeling: A Fresh Approach*, 2009.
+\*
+[utilities.csv](http://jgscott.github.io/teaching/data/utilities.csv):
+monthly gas bill versus temperature for a house in Minnesota. Data
+source: Daniel T. Kaplan, *Statistical Modeling: A Fresh Approach*,
+2009.
 
 First let's load the mosaic library and read in the utilities data set.
 
@@ -64,8 +62,9 @@ different numbers of billing days:
 
     hist(utilities$billingDays, breaks=20)
 
-![](utilities_files/figure-markdown_strict/unnamed-chunk-3-1.png)  
- Thus we probably want to be measuring gas usage per day, rather than to
+![](utilities_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+
+Thus we probably want to be measuring gas usage per day, rather than to
 the total over each billing period. Let's define a new variable, called
 daily.average.gasbill:
 
@@ -79,8 +78,9 @@ linear model, and add the line to the plot.
     points(fitted(lm1)~temp, data=utilities, col='red', pch=19)
     abline(lm1)
 
-![](utilities_files/figure-markdown_strict/unnamed-chunk-5-1.png)  
- This model doesn't do a very good job: we're fitting a linear model to
+![](utilities_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+
+This model doesn't do a very good job: we're fitting a linear model to
 obviously nonlinear data. You could see this nonlinearity on the
 original plot, above. You could also see it on a residual plot, where
 it's obvious there is still some systematic variation in the residuals
@@ -88,8 +88,9 @@ as a function of the predictor variable.
 
     plot(resid(lm1) ~ temp, data=utilities)
 
-![](utilities_files/figure-markdown_strict/unnamed-chunk-6-1.png)  
- \#\#\# Polynomial regression models
+![](utilities_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+
+### Polynomial regression models
 
 One approach to address this shortcoming is to fit a parabola: that is,
 y versus x and x^2.
@@ -100,8 +101,9 @@ y versus x and x^2.
     plot(daily.average.gasbill ~ temp, data=utilities)
     points(fitted(lm2)~temp, data=utilities, col='blue', pch=19)
 
-![](utilities_files/figure-markdown_strict/unnamed-chunk-7-1.png)  
- In the model statement, the `I(temp^2)` is the way we tell R to treat
+![](utilities_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+
+In the model statement, the `I(temp^2)` is the way we tell R to treat
 temperature-squared as an additional variable in the model. We could
 also add higher powers of temperature, although the quadratic fit looks
 sensible here.

@@ -1,7 +1,3 @@
----
-layout: page
----
-
 Economic development and infant mortality
 -----------------------------------------
 
@@ -11,8 +7,8 @@ useful for data bounded below by 0, or data that span many orders of
 magnitude.
 
 Data files:  
-\* [infmort.csv](infmort.csv): infant mortality and size of economy for
-207 countries.
+\* [infmort.csv](http://jgscott.github.io/teaching/data/infmort.csv):
+infant mortality and size of economy for 207 countries.
 
 ### Preliminaries
 
@@ -46,25 +42,28 @@ We'll start by plotting the data:
 
     plot(mortality ~ gdp, data=infmort)
 
-![](infmort_files/figure-markdown_strict/unnamed-chunk-3-1.png)  
- There's a noticeable bunching of the data at the left of the plot. This
+![](infmort_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+
+There's a noticeable bunching of the data at the left of the plot. This
 happens because GDP is a highly skewed variable; there are many small
 economies and few large ones. We can see this effect easily in a
 histogram.
 
     hist(infmort$gdp, breaks=20)
 
-![](infmort_files/figure-markdown_strict/unnamed-chunk-4-1.png)  
- Note the long right tail. This suggests that we should try using the
+![](infmort_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+
+Note the long right tail. This suggests that we should try using the
 logarithm of GDP, which will have the effect of unbunching the data.
 Let's try plotting infant mortality versus log GDP, by specifying that
 we want the x variable to be transformed to a log scale.
 
     plot(mortality ~ log(gdp), data=infmort)
 
-![](infmort_files/figure-markdown_strict/unnamed-chunk-5-1.png)  
- Notice that the scale of the x axis changes: it's measured in units of
-log GDP now. (In R, log means natural log... if you want the base-10
+![](infmort_files/figure-markdown_strict/unnamed-chunk-5-1.png)
+
+Notice that the scale of the x axis changes: it's measured in units of
+log GDP now. (In R, log means natural log. if you want the base-10
 logarithm, use log10 instead.)
 
 This plot looks better, but now we notice that the points are bunched
@@ -73,8 +72,9 @@ log of the y variable.
 
     plot(log(mortality) ~ log(gdp), data=infmort)
 
-![](infmort_files/figure-markdown_strict/unnamed-chunk-6-1.png)  
- A straight line looks like it would fit very well here:
+![](infmort_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+
+A straight line looks like it would fit very well here:
 
     lm1 = lm(log(mortality) ~ log(gdp), data= infmort)
     coef(lm1)
@@ -87,7 +87,7 @@ We can add the line straight to the plot on the log-log scale:
     plot(log(mortality) ~ log(gdp), data=infmort)
     abline(lm1)
 
-![](infmort_files/figure-markdown_strict/unnamed-chunk-8-1.png)  
+![](infmort_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
 ### Visualizing the fitted power law on the original scale
 
@@ -99,8 +99,9 @@ scale.
 
     plot(mortality ~ gdp, data= infmort)
 
-![](infmort_files/figure-markdown_strict/unnamed-chunk-9-1.png)  
- Next, let's get the fitted values on the log-log scale, and transform
+![](infmort_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+
+Next, let's get the fitted values on the log-log scale, and transform
 them back to the original scale. Because the exponential is the inverse
 of the log transform, we do this by exponentiating the fitted values:
 
@@ -116,8 +117,10 @@ point style:
     plot(mortality ~ gdp, data=infmort)
     points(mort.pred ~ gdp, data=infmort, col='blue', pch=18)
 
-![](infmort_files/figure-markdown_strict/unnamed-chunk-11-1.png)  
- Try typing in ?points if you want to see the options for pch.
+![](infmort_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+
+Try typing in "?points" to the console if you want to see the options
+for point style (pch).
 
 We could also add the fitted curve directly to the scatter plot using
 the `curve` function, based on what we know about power laws and log

@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ## Economic development and infant mortality
@@ -10,7 +8,7 @@ output:
 In this walk-through, you'll learn to fit a power law to data using linear least squares and log transformations.  The log transform is often useful for data bounded below by 0, or data that span many orders of magnitude.
 
 Data files:  
-* [infmort.csv](infmort.csv): infant mortality and size of economy for 207 countries.
+* [infmort.csv](http://jgscott.github.io/teaching/data/infmort.csv): infant mortality and size of economy for 207 countries.
 
 
 ### Preliminaries
@@ -44,7 +42,7 @@ Note the long right tail.  This suggests that we should try using the logarithm 
 plot(mortality ~ log(gdp), data=infmort)
 ```
 
-Notice that the scale of the x axis changes: it's measured in units of log GDP now.  (In R, log means natural log... if you want the base-10 logarithm, use log10 instead.)
+Notice that the scale of the x axis changes: it's measured in units of log GDP now.  (In R, log means natural log. if you want the base-10 logarithm, use log10 instead.)
 
 This plot looks better, but now we notice that the points are bunched toward the bottom of the plot.  This suggest we might also try taking the log of the y variable.
 ```{r}
@@ -86,7 +84,7 @@ plot(mortality ~ gdp, data=infmort)
 points(mort.pred ~ gdp, data=infmort, col='blue', pch=18)
 ```
 
-Try typing in ?points if you want to see the options for pch.
+Try typing in "?points" to the console if you want to see the options for point style (pch).
 
 We could also add the fitted curve directly to the scatter plot using the `curve` function, based on what we know about power laws and log transformations:
 ```{r}

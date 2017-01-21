@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ### Gas consumption versus temperature  
@@ -10,7 +8,7 @@ output:
 In this walk-through, you'll learn how to fit nonlinear models by least squares using a simple trick: adding powers (squared, cubed, etc) of the original predictor variable.  You will also see that new variables can be defined in terms of old ones.
 
 Data files:  
-* [utilities.csv](utilities.csv): monthly gas bill versus temperature for a house in Minnesota.  Data source: Daniel T. Kaplan, _Statistical Modeling: A Fresh Approach_, 2009.
+* [utilities.csv](http://jgscott.github.io/teaching/data/utilities.csv): monthly gas bill versus temperature for a house in Minnesota.  Data source: Daniel T. Kaplan, _Statistical Modeling: A Fresh Approach_, 2009.
 
 First let's load the mosaic library and read in the utilities data set.
 ```{r, message=FALSE}

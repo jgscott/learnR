@@ -1,7 +1,3 @@
----
-layout: page
----
-
 ### Asking prices of pickup trucks.
 
 In this walk-through, you'll learn simple linear regression: that is,
@@ -9,8 +5,8 @@ how to fit a straight line by ordinary least squares. You will also
 learn how to summarize the results of a simple linear regression model.
 
 Data files:  
-\* [pickup.csv](pickup.csv): details on pickup trucks sold on Craiglist
-in Austin.
+\* [pickup.csv](http://jgscott.github.io/teaching/data/pickup.csv):
+details on pickup trucks sold on Craiglist in Austin.
 
 ### Warm-up
 
@@ -36,7 +32,7 @@ coverage interval.
 
     hist(pickup$price, breaks=20)
 
-![](pickup_files/figure-markdown_strict/unnamed-chunk-2-1.png)  
+![](pickup_files/figure-markdown_strict/unnamed-chunk-2-1.png)
 
     endpoints80 = qdata(pickup$price, p=c(0.1, 0.9))
     endpoints80
@@ -54,8 +50,9 @@ coverage interval.
     hist(pickup$price, breaks=20, col='lightblue')
     abline(v=endpoints80$quantile, col='red')
 
-![](pickup_files/figure-markdown_strict/unnamed-chunk-3-1.png)  
- Notice the color we've added to our lives.
+![](pickup_files/figure-markdown_strict/unnamed-chunk-3-1.png)
+
+Notice the color we've added to our lives.
 
 ### Fitting a straight line by ordinary least squares (OLS)
 
@@ -63,8 +60,9 @@ Next, let's make a scatterplot of asking price versus mileage.
 
     plot(price~miles, data=pickup)
 
-![](pickup_files/figure-markdown_strict/unnamed-chunk-4-1.png)  
- Notice the downward trend. We'll use the `lm` function to fit a trend
+![](pickup_files/figure-markdown_strict/unnamed-chunk-4-1.png)
+
+Notice the downward trend. We'll use the `lm` function to fit a trend
 line by ordinary least squares, to quantify the steepness of the
 decline.
 
@@ -80,7 +78,10 @@ decline.
 
 This command just returns some information about the model to the
 console. But it's better if we save the result, so that we can use other
-functions to extract information about the fitted model.
+functions to extract information about the fitted model. The commands
+below save the fitted linear model in an object called "model1", and the
+use the "coef" function to extract the coefficients of the model from
+this saved object.
 
     model1 = lm(price~miles, data=pickup)
     coef(model1)
@@ -97,13 +98,14 @@ add the fitted trend-line to the scatter plot, like this:
     plot(price~miles, data=pickup)
     abline(model1)
 
-![](pickup_files/figure-markdown_strict/unnamed-chunk-7-1.png)  
- \#\#\# Plug-in prediction
+![](pickup_files/figure-markdown_strict/unnamed-chunk-7-1.png)
+
+### Plug-in prediction
 
 One simple thing we can use the model to do is to make plug-in
-predictions. Let's say we had saw pickups for sale: one with 25000
-miles, one with 50000 miles, and one with 100000 miles. What should we
-expect their asking price to be? We could do this by hand:
+predictions. Let's say we had seen three pickups for sale: one with
+25000 miles, one with 50000 miles, and one with 100000 miles. What
+should we expect their asking prices to be? We could do this by hand:
 
     new_pickups = c(25000,50000,100000)
     yhat = 14419.3762 + (-0.0643)*new_pickups
@@ -111,7 +113,9 @@ expect their asking price to be? We could do this by hand:
 
     ## [1] 12811.876 11204.376  7989.376
 
-Or we could pass in a new data frame to the `predict` function:
+Or we could pass in a new data frame to the `predict` function. The
+commands below create a new data frame with the "miles" variable in it,
+and then pass this data frame to the "predict" function:
 
     new_pickups = data.frame(miles=c(25000,50000,100000))
     predict(model1, newdata=new_pickups)
@@ -171,8 +175,9 @@ original x variable:
 
     plot(resid(model1) ~ miles, data=pickup)
 
-![](pickup_files/figure-markdown_strict/unnamed-chunk-11-1.png)  
- There is no systematic trend left in the residuals, which is just as it
+![](pickup_files/figure-markdown_strict/unnamed-chunk-11-1.png)
+
+There is no systematic trend left in the residuals, which is just as it
 should be if we've done a good job modeling the response using the
 predictor.
 
