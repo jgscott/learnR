@@ -90,7 +90,7 @@ Notice that to get the prediction for scenes that are both littered and far away
 mean(PictureTarget.RT ~ Littered + FarAway, data=rxntime)
 ```
 
-A reasonable question is: why er with the extra complexity of main effects and interactions if all we're doing is computing the group-wise means for all four combinations of the two variables?
+A reasonable question is: why bother with the extra complexity of main effects and interactions if all we're doing is computing the group-wise means for all four combinations of the two variables?
 
 In fact, if we have only these two variables, there isn't really a compelling reason to do so.  However, let's suppose we wanted to add a third variable:
 ```{r}
@@ -122,9 +122,9 @@ This breakdown of the sums of squares into its constituent parts is called the "
 
 ### A modified ANOVA table 
 
-However, I've always found R's basic `anova` table to be kind of hard to read  After all, how is a normal human being supposed to interpret sums of squares?  Ugh.  
+However, I've always found R's basic `anova` table to be kind of hard to read.  After all, how is a normal human being supposed to interpret sums of squares?  The number are on a complete non-intuitive scale.    
 
-So I coded up a different version called `simple_anova`, which you can find on my website.  The following code snippet shows you how to source this function directly into R; this is kind of like loading a library, except less official :-)
+So I coded up a different version of an ANOVA table, called `simple_anova`, which you can find on my website.  The following code snippet shows you how to source this function directly into R; this is kind of like loading a library, except less official :-)
 ```{r}
 # Load some useful utility functions
 source('http://jgscott.github.io/teaching/r/utils/class_utils.R')

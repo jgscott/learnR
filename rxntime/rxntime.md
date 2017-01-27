@@ -191,7 +191,7 @@ of Littered and FarAway:
     ##      0.0      1.0      0.1      1.1 
     ## 491.4229 559.3271 521.9979 629.0208
 
-A reasonable question is: why er with the extra complexity of main
+A reasonable question is: why bother with the extra complexity of main
 effects and interactions if all we're doing is computing the group-wise
 means for all four combinations of the two variables?
 
@@ -317,13 +317,13 @@ called the "analysis of variance" for the model, or "ANOVA" for short.
 ### A modified ANOVA table
 
 However, I've always found R's basic `anova` table to be kind of hard to
-read After all, how is a normal human being supposed to interpret sums
-of squares? Ugh.
+read. After all, how is a normal human being supposed to interpret sums
+of squares? The number are on a complete non-intuitive scale.
 
-So I coded up a different version called `simple_anova`, which you can
-find on my website. The following code snippet shows you how to source
-this function directly into R; this is kind of like loading a library,
-except less official :-)
+So I coded up a different version of an ANOVA table, called
+`simple_anova`, which you can find on my website. The following code
+snippet shows you how to source this function directly into R; this is
+kind of like loading a library, except less official :-)
 
     # Load some useful utility functions
     source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
