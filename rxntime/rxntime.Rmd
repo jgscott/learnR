@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ## Reaction times in video games
@@ -12,11 +10,13 @@ Learning goals:
 * understand the appropriate use and interpretation of dummy variables and interaction terms
 
 Data files:  
-* [rxntime.csv](rxntime.csv): data on a neuroscience experiment measuring people's reaction time to visual stimuli  
+* [rxntime.csv](http://jgscott.github.io/teaching/data/rxntime.csv): data on a neuroscience experiment measuring people's reaction time to visual stimuli  
 
 ### More than one categorical predictor
 
-We'll start with the reaction-time data set, which is from an experiment run by a British video-game manufacturer in an attempt to calibrate the level of difficulty of certain tasks in the video game.  Subjects in this experiment were presented with a simple "Where's Waldo?"-style visual scene.  The subjects had to find a number (1 or 2) floating somewhere in the scene, to identify the number, and to press the corresponding button as quickly as possible.  The response variable is their reaction time.  You'll need the mosaic library, so make sure to load it first.
+The reaction-time data set comes from an experiment run by a British video-game manufacturer in an attempt to calibrate the level of difficulty of certain tasks in the video game.  Subjects in this experiment were presented with a simple "Where's Waldo?"-style visual scene.  The subjects had to find a number (1 or 2) floating somewhere in the scene, to identify the number, and to press the corresponding button as quickly as possible.  The response variable is their reaction time.  The predictors are different characteristics of the visual scene.  
+
+You'll need the mosaic library, so make sure to load it first.
 
 ```{r, message=FALSE}
 library(mosaic)
@@ -119,3 +119,33 @@ anova(lm4)
 The "Sum Sq" (for sums of squares) column in the one that interests us.  This column is computed by adding the predictors sequentially and asking: by how much did the residual sum of squares drop when this predictor was added to the previous model?  (Remember the variance decomposition here.)  The larger the entry in the "Sum Sq" column, the more that variable improved the predictive ability of the model.  The final entry (Residuals) tells you the residual sums of squares after all variables were added.  This serves as a useful basis for comparison when trying to interpret the magnitude of the other entries in this column.
 
 This breakdown of the sums of squares into its constituent parts is called the "analysis of variance" for the model, or "ANOVA" for short.
+
+### A modified ANOVA table 
+
+However, I've always found R's basic `anova` table to be kind of hard to read  After all, how is a normal human being supposed to interpret sums of squares?  Ugh.  
+
+So I coded up a different version called `simple_anova`, which you can find on my website.  The following code snippet shows you how to source this function directly into R; this is kind of like loading a library, except less official :-)
+```{r}
+# Load some useful utility functions
+source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
+```
+
+Now you can call the `simple_anova` function in the same way you call the `anova` one:
+```{r}
+simple_anova(lm4)
+```
+
+As before, each row involves adding a variable to the model.  But the output is a little different.  There are six columns:  
+- Df: how many degrees of freedom (i.e. parameters added to the model) did this variable use?  
+- R2: what was the R-squared of the model?  
+- R2_improve: how much did R-squared improve (go up), compared to the previous model, when we added this variable?  
+- sd: what was the residual standard deviation of the model?  
+- sd_improve: how much did the residual standard deviation improve (go down), compared to the previous model, when we added this variable?  
+- pval: don't worry about this for now, but this corresponds to a hypothesis test (specifically, an F test) about whether the variable appears to have a statistically significant partial relationship with the response.  
+
+For me, at least, these quantities convey a lot more useful information than the basic `anova` table.  Just remember that if you want to use the `simple_anova` command in the future, you'll always have to preface it by sourcing the function using the command we saw above:
+
+```
+# Put this at the top of any script where you use "simple_anova"  
+source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
+```

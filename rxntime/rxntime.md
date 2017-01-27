@@ -1,7 +1,3 @@
----
-layout: page
----
-
 Reaction times in video games
 -----------------------------
 
@@ -12,18 +8,21 @@ predictors
 and interaction terms
 
 Data files:  
-\* [rxntime.csv](rxntime.csv): data on a neuroscience experiment
-measuring people's reaction time to visual stimuli
+\* [rxntime.csv](http://jgscott.github.io/teaching/data/rxntime.csv):
+data on a neuroscience experiment measuring people's reaction time to
+visual stimuli
 
 ### More than one categorical predictor
 
-We'll start with the reaction-time data set, which is from an experiment
-run by a British video-game manufacturer in an attempt to calibrate the
-level of difficulty of certain tasks in the video game. Subjects in this
+The reaction-time data set comes from an experiment run by a British
+video-game manufacturer in an attempt to calibrate the level of
+difficulty of certain tasks in the video game. Subjects in this
 experiment were presented with a simple "Where's Waldo?"-style visual
 scene. The subjects had to find a number (1 or 2) floating somewhere in
 the scene, to identify the number, and to press the corresponding button
 as quickly as possible. The response variable is their reaction time.
+The predictors are different characteristics of the visual scene.
+
 You'll need the mosaic library, so make sure to load it first.
 
     library(mosaic)
@@ -314,3 +313,53 @@ trying to interpret the magnitude of the other entries in this column.
 
 This breakdown of the sums of squares into its constituent parts is
 called the "analysis of variance" for the model, or "ANOVA" for short.
+
+### A modified ANOVA table
+
+However, I've always found R's basic `anova` table to be kind of hard to
+read After all, how is a normal human being supposed to interpret sums
+of squares? Ugh.
+
+So I coded up a different version called `simple_anova`, which you can
+find on my website. The following code snippet shows you how to source
+this function directly into R; this is kind of like loading a library,
+except less official :-)
+
+    # Load some useful utility functions
+    source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
+
+Now you can call the `simple_anova` function in the same way you call
+the `anova` one:
+
+    simple_anova(lm4)
+
+    ##                    Df       R2 R2_improve     sd sd_improve       pval
+    ## Intercept           1 0.000000            142.91                      
+    ## Littered            1 0.093695   0.093695 136.08     6.8240 0.00000000
+    ## FarAway             1 0.124480   0.030785 133.79     2.2963 0.00000000
+    ## factor(Subject)    11 0.228098   0.103618 125.98     7.8041 0.00000000
+    ## Littered:FarAway    1 0.232784   0.004686 125.63     0.3500 0.00066088
+    ## Residuals        1905
+
+As before, each row involves adding a variable to the model. But the
+output is a little different. There are six columns:  
+- Df: how many degrees of freedom (i.e. parameters added to the model)
+did this variable use?  
+- R2: what was the R-squared of the model?  
+- R2\_improve: how much did R-squared improve (go up), compared to the
+previous model, when we added this variable?  
+- sd: what was the residual standard deviation of the model?  
+- sd\_improve: how much did the residual standard deviation improve (go
+down), compared to the previous model, when we added this variable?  
+- pval: don't worry about this for now, but this corresponds to a
+hypothesis test (specifically, an F test) about whether the variable
+appears to have a statistically significant partial relationship with
+the response.
+
+For me, at least, these quantities convey a lot more useful information
+than the basic `anova` table. Just remember that if you want to use the
+`simple_anova` command in the future, you'll always have to preface it
+by sourcing the function using the command we saw above:
+
+    # Put this at the top of any script where you use "simple_anova"  
+    source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
