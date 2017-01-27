@@ -122,7 +122,7 @@ This breakdown of the sums of squares into its constituent parts is called the "
 
 ### A modified ANOVA table 
 
-However, I've always found R's basic `anova` table to be kind of hard to read.  After all, how is a normal human being supposed to interpret sums of squares?  The number are on a complete non-intuitive scale.    
+However, I've always found R's basic `anova` table to be kind of hard to read.  After all, how is a normal human being supposed to interpret sums of squares?  The number are on a completely non-intuitive scale.    
 
 So I coded up a different version of an ANOVA table, called `simple_anova`, which you can find on my website.  The following code snippet shows you how to source this function directly into R; this is kind of like loading a library, except less official :-)
 ```{r}

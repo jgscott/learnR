@@ -318,7 +318,7 @@ called the "analysis of variance" for the model, or "ANOVA" for short.
 
 However, I've always found R's basic `anova` table to be kind of hard to
 read. After all, how is a normal human being supposed to interpret sums
-of squares? The number are on a complete non-intuitive scale.
+of squares? The number are on a completely non-intuitive scale.
 
 So I coded up a different version of an ANOVA table, called
 `simple_anova`, which you can find on my website. The following code
