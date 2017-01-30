@@ -66,10 +66,8 @@ point is *f*(*x*)=0.1859.
 
 Three notes here:
 
-1.  You can call your user-defined function just like any other function
-    in R. For example:
-
-<!-- -->
+First, you can call your user-defined function just like any other
+function in R. For example:
 
     myfunction(4)
 
@@ -78,17 +76,15 @@ Three notes here:
 This tells you that the value your function takes at x=4 is f(x) =
 0.09375.
 
-1.  If you wanted to find the minimum, you would chaince "maximum =
-    TRUE" to "maximum = FALSE". (Of course, this function is unbounded
-    below, so it has no minimum.)
+Second, if you wanted to find the minimum, you would change "maximum =
+TRUE" to "maximum = FALSE" in the above call to optimize. (Of course,
+the function we chose is unbounded below, so it has no minimum.)
 
-2.  In the above code, you are passing one function (`myfunction`) as an
-    argment to another function (`optimize`). This might make your head
-    spin a bit at first, but it's a perfectly valid thing to do. Many
-    functions in R, in fact, *expect* that their arguments are
-    other functions. `curve` is an example:
-
-<!-- -->
+Third, in the above code, you are passing one function (`myfunction`) as
+an argment to another function (`optimize`). This might make your head
+spin a bit at first, but it's a perfectly valid thing to do. Many
+functions in R, in fact, *expect* that their arguments are other
+functions. `curve` is an example:
 
     curve(myfunction, from=1, to=3)
 
@@ -108,8 +104,8 @@ Just to put all this together, let's maximize a different function,
     ## $objective
     ## [1] 1
 
-This tells us that the maximum occurs at x=3, which we can verify by
-plotting:
+This tells us that the maximum occurs at x=3 with value f(x) = 1, which
+we can verify by plotting:
 
     curve(myotherfunction, from=0, to=6)
 
