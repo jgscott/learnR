@@ -1,14 +1,11 @@
----
-layout: post
----
-
 Manufacturing flaws in circuit boards
 -------------------------------------
 
 In this case study, you'll look at data from a quality-control
 experiment from AT&T's process for manufacturing printed circuit boards.
-The data are in [solder.csv](solder.csv), and come to us courtesy of the
-R package `faraway.`
+The data are in
+[solder.csv](http://jgscott.github.io/teaching/data/solder.csv), and
+come to us courtesy of the R package `faraway.`
 
 Load the data set using the Import Dataset button. Then load the mosaic
 library and begin by summarizing the data set.
@@ -31,11 +28,11 @@ inspection. The remaining variables refect different choices in the
 manufacturing process. The goal is to understand which combination of
 choices leads to the lowest number of skips, and therefore the most
 reliable manufacturing process. We'll focus on three such variables:  
-\* Opening: the size of the opening on the solder gun (small, medium, or
+- Opening: the size of the opening on the solder gun (small, medium, or
 large)  
-\* Solder: the thickness of the alloy used for soldering (thick or
+- Solder: the thickness of the alloy used for soldering (thick or
 thin)  
-\* Mask: according to Wikipedia, a solder mask is "a thin lacquer-like
+- Mask: according to Wikipedia, a solder mask is "a thin lacquer-like
 layer of polymer that is usually applied to the copper traces of a
 printed circuit board (PCB) for protection against oxidation and to
 prevent solder bridges from forming between closely spaced solder pads."
@@ -47,16 +44,17 @@ variable individually.
 
     bwplot(skips ~ Solder, data=solder)
 
-![](solder_files/figure-markdown_strict/unnamed-chunk-3-1.png)  
+![](solder_files/figure-markdown_strict/unnamed-chunk-3-1.png)
 
     bwplot(skips ~ Opening, data=solder)
 
-![](solder_files/figure-markdown_strict/unnamed-chunk-3-2.png)  
+![](solder_files/figure-markdown_strict/unnamed-chunk-3-2.png)
 
     bwplot(skips ~ Mask, data=solder)
 
-![](solder_files/figure-markdown_strict/unnamed-chunk-3-3.png)  
- Each seems to predict some of the variation in solder skips.
+![](solder_files/figure-markdown_strict/unnamed-chunk-3-3.png)
+
+Each seems to predict some of the variation in solder skips.
 
 Build a model to predict solder skips using these three predictor
 variables. Include whatever combination of main effects and interaction
