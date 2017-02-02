@@ -1,15 +1,13 @@
----
-layout: page
----
-
 Learning goals:  
 \* create a prediction interval to quantify forecasting uncertainty  
 \* compute R-squared of a linear model, both "by hand" and using R's
 `summary` function.
 
 Data files:  
-\* [creatinine.csv](creatinine.csv): data on age and kidney function for
-157 adult males from a single clinic.
+\*
+[creatinine.csv](http://jgscott.github.io/teaching/data/creatinine.csv):
+data on age and kidney function for 157 adult males from a single
+clinic.
 
 ### Prediction intervals
 

@@ -1,7 +1,3 @@
----
-layout: post
----
-
 House prices
 ------------
 
@@ -14,7 +10,8 @@ regression models
 predictors
 
 Data files:  
-\* [house.csv](house.csv): sales prices of houses in Kansas City
+\* [house.csv](http://jgscott.github.io/teaching/data/house.csv): sales
+prices of houses in Kansas City
 
 ### Aggregation paradoxes in regression
 
@@ -41,7 +38,8 @@ data set and summarizing the variables.
     ##  Max.   :5.000   Max.   :4.000   Max.   :211200
 
 Although there are a lot of variables in this data set, we will focus on
-four: \* price: the sales price of the house.  
+four:  
+\* price: the sales price of the house.  
 \* sqrt: the size of the house in square feet.  
 \* nbhd: a categorical variable indicating which of three neighborhoods
 the house is in.  
@@ -55,7 +53,7 @@ terms of its square footage:
     lm0 = lm(price~sqft, data=house)
     abline(lm0)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-4-1.png)  
+![](house_files/figure-markdown_strict/unnamed-chunk-4-1.png)
 
     coef(lm0)
 
@@ -70,12 +68,13 @@ this answer.
 
     bwplot(price ~ nbhd, data=house)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-5-1.png)  
+![](house_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
     bwplot(sqft ~ nbhd, data=house)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-5-2.png)  
- We see that the both the prices and sizes of houses differ
+![](house_files/figure-markdown_strict/unnamed-chunk-5-2.png)
+
+We see that the both the prices and sizes of houses differ
 systematically across neighborhoods. Might the neighborhood be a
 confounding variable that distorts our estimate of the size-versus-price
 relationship? For example, some neighborhoods might be more desirable
@@ -89,7 +88,7 @@ this is plausible. First, neighborhood 1:
     lm1 = lm(price~sqft, data=subset(house, nbhd=='nbhd01'))
     abline(lm1)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-6-1.png)  
+![](house_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
     coef(lm1)
 
@@ -103,7 +102,7 @@ about $40. How about neighborhood 2?
     lm2 = lm(price~sqft, data=subset(house, nbhd=='nbhd02'))
     abline(lm2)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-7-1.png)  
+![](house_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
     coef(lm2)
 
@@ -116,7 +115,7 @@ Here the size premium is about $50 per square foot. And neighborhood 3?
     lm3 = lm(price~sqft, data=subset(house, nbhd=='nbhd03'))
     abline(lm3)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-8-1.png)  
+![](house_files/figure-markdown_strict/unnamed-chunk-8-1.png)
 
     coef(lm3)
 
@@ -150,11 +149,12 @@ different colors:
     # Finally, add the "global" line
     abline(lm0, lwd=4)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-9-1.png)  
- You can see that the lines for the individual neighborhoods are all
-less steep than the overall line for the aggregrated data set. This
-suggests that neighborhood is indeed a confounder for the
-price-versus-size relationship.
+![](house_files/figure-markdown_strict/unnamed-chunk-9-1.png)
+
+You can see that the lines for the individual neighborhoods are all less
+steep than the overall line for the aggregrated data set. This suggests
+that neighborhood is indeed a confounder for the price-versus-size
+relationship.
 
 ### Dummy variables
 
@@ -204,9 +204,9 @@ each neighborhood, we may want to introduce an interaction term:
     ##        9.128318        9.025674
 
 Now we're allowing both the slope and intercept to differ from
-neighborhood to neighborhood. The rules are: \* The coefficients on the
-dummy variables get added to the baseline intercept to form each
-neighborhood-specific intercept.  
+neighborhood to neighborhood. The rules are:  
+\* The coefficients on the dummy variables get added to the baseline
+intercept to form each neighborhood-specific intercept.  
 \* The coefficients on the interaction terms get added to the baseline
 slope to form each neighborhood-specific slope.
 
@@ -218,9 +218,8 @@ Thus our model above output says that:
 ### Multiple categorical predictors
 
 Once you've got the idea of dummy variables and interactions, you can
-add as many categorical variables as you want. (Word to the wise: doing
-so will not necessarily be a good idea!) For example, try interpreting
-the coefficients for the following model:
+add as many categorical variables as you deem appropriate. For example,
+consider the following model:
 
     lm6 = lm(price ~ sqft + nbhd + brick + brick:sqft, data=house)
     coef(lm6)
@@ -229,6 +228,10 @@ the coefficients for the following model:
     ##   28434.99926      41.27425    5447.01983   36547.03947  -16787.14206 
     ## sqft:brickYes 
     ##      17.85384
+
+Here there are offsets for neighborhoods 2 and 3, as well as for brick
+houses (brick = Yes). There are offsets with respect to the baseline
+case of non-brick houses in neighborhood 1.
 
 ### ANOVA in the presence of correlated predictors
 
@@ -242,65 +245,61 @@ the model improves at each stage. We measure the improvement by change
 in predictable variation (PV), or equivalently the reduction in the
 residual sums of squares (unpredictable variation, or UV).
 
+Let's first load in the `simple_anova` command that we used on the
+video-games data. This is in the utilities file on my website:
+
+    # Load some useful utility functions
+    source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
+
 If we run an analysis of variance on our final model above, we get the
-following table. We'll divide the sales price by $1000 (so that an
-outcome of 200 corresponds to a $200,000 sales price), just to make the
-numbers in our ANOVA table a little bit easier to interpret:
+following table.
 
-    lm6 = lm(price/1000 ~ sqft + nbhd + brick + brick:sqft, data=house)
-    anova(lm6)
+    lm6 = lm(price ~ sqft + nbhd + brick + brick:sqft, data=house)
+    simple_anova(lm6)
 
-    ## Analysis of Variance Table
-    ## 
-    ## Response: price/1000
-    ##             Df Sum Sq Mean Sq  F value    Pr(>F)    
-    ## sqft         1  28036 28036.4 181.2712 < 2.2e-16 ***
-    ## nbhd         2  34773 17386.4 112.4130 < 2.2e-16 ***
-    ## brick        1   9646  9646.5  62.3698 1.404e-12 ***
-    ## sqft:brick   1    360   360.4   2.3305    0.1295    
-    ## Residuals  122  18869   154.7                       
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##             Df      R2 R2_improve    sd sd_improve    pval
+    ## Intercept    1 0.00000            26869                   
+    ## sqft         1 0.30579    0.30579 22476     4393.2 0.00000
+    ## nbhd         2 0.68505    0.37926 15260     7215.4 0.00000
+    ## brick        1 0.79026    0.10521 12504     2756.6 0.00000
+    ## sqft:brick   1 0.79420    0.00393 12436       67.1 0.12945
+    ## Residuals  122
 
-It looks as though the neighborhood predicts the most variation (change
-in PV = 34773), followed by sqft (delta-PV = 28036) and then brick
-(delta-PV = 9646).
+It looks as though the neighborhood leads to the largest improvement in
+predictive power (sd\_improve = 7215), followed by sqft (4393) and then
+brick (2756).
 
 But what if we arbitrarily change the order in which we add the
 variables?
 
-    lm6alt = lm(price/1000 ~ brick + nbhd + sqft + brick:sqft, data=house)
-    anova(lm6alt)
+    lm6alt = lm(price ~ brick + nbhd + sqft + brick:sqft, data=house)
+    simple_anova(lm6alt)
 
-    ## Analysis of Variance Table
-    ## 
-    ## Response: price/1000
-    ##             Df Sum Sq Mean Sq  F value    Pr(>F)    
-    ## brick        1  18799 18799.4 121.5490 < 2.2e-16 ***
-    ## nbhd         2  42777 21388.5 138.2888 < 2.2e-16 ***
-    ## sqft         1  10879 10879.2  70.3403 1.023e-13 ***
-    ## brick:sqft   1    360   360.4   2.3305    0.1295    
-    ## Residuals  122  18869   154.7                       
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ##             Df      R2 R2_improve    sd sd_improve    pval
+    ## Intercept    1 0.00000            26869                   
+    ## brick        1 0.20504    0.20504 24051     2817.6 0.00000
+    ## nbhd         2 0.67161    0.46656 15582     8468.7 0.00000
+    ## sqft         1 0.79026    0.11866 12504     3078.9 0.00000
+    ## brick:sqft   1 0.79420    0.00393 12436       67.1 0.12945
+    ## Residuals  122
 
 Now the importance of brick and neighborhood looks much larger, and the
-importance of size much smaller. But the coefficients in the two models
+importance of size a bit smaller. But the coefficients in the two models
 are exactly the same:
 
     coef(lm6)
 
     ##   (Intercept)          sqft    nbhdnbhd02    nbhdnbhd03      brickYes 
-    ##   28.43499926    0.04127425    5.44701983   36.54703947  -16.78714206 
+    ##   28434.99926      41.27425    5447.01983   36547.03947  -16787.14206 
     ## sqft:brickYes 
-    ##    0.01785384
+    ##      17.85384
 
     coef(lm6alt)
 
     ##   (Intercept)      brickYes    nbhdnbhd02    nbhdnbhd03          sqft 
-    ##   28.43499926  -16.78714206    5.44701983   36.54703947    0.04127425 
+    ##   28434.99926  -16787.14206    5447.01983   36547.03947      41.27425 
     ## brickYes:sqft 
-    ##    0.01785384
+    ##      17.85384
 
 When the predictor variables are correlated with each other, an analysis
 of variance for a regression model---but not the model itself---will
@@ -332,4 +331,4 @@ used by `xyplot`.
     # Pass this custom plotting function to xyplot
     xyplot(price ~ sqft | nbhd, data=house, panel=plot_with_lines)
 
-![](house_files/figure-markdown_strict/unnamed-chunk-16-1.png)
+![](house_files/figure-markdown_strict/unnamed-chunk-17-1.png)

@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ## House prices
@@ -13,7 +11,7 @@ Learning goals:
 * correctly interpret an ANOVA table in a model with correlated predictors     
 
 Data files:  
-* [house.csv](house.csv): sales prices of houses in Kansas City
+* [house.csv](http://jgscott.github.io/teaching/data/house.csv): sales prices of houses in Kansas City
 
 
 ### Aggregation paradoxes in regression 
@@ -32,7 +30,7 @@ library(mosaic)
 summary(house)
 ```
 
-Although there are a lot of variables in this data set, we will focus on four:
+Although there are a lot of variables in this data set, we will focus on four:  
 * price: the sales price of the house.  
 * sqrt: the size of the house in square feet.  
 * nbhd: a categorical variable indicating which of three neighborhoods the house is in.    
@@ -133,9 +131,9 @@ lm5 = lm(price ~ sqft + nbhd + nbhd:sqft, data=house)
 coef(lm5)
 ```
 
-Now we're allowing both the slope and intercept to differ from neighborhood to neighborhood.  The rules are:
+Now we're allowing both the slope and intercept to differ from neighborhood to neighborhood.  The rules are:  
 * The coefficients on the dummy variables get added to the baseline intercept to form each neighborhood-specific intercept.  
-* The coefficients on the interaction terms get added to the baseline slope to form each neighborhood-specific slope.
+* The coefficients on the interaction terms get added to the baseline slope to form each neighborhood-specific slope.  
 
 Thus our model above output says that:  
 * Neighborhood 1 (the baseline): price = 32906 + 40.30 \* sqft  
@@ -145,30 +143,41 @@ Thus our model above output says that:
 
 ### Multiple categorical predictors
 
-Once you've got the idea of dummy variables and interactions, you can add as many categorical variables as you want.  (Word to the wise: doing so will not necessarily be a good idea!)  For example, try interpreting the coefficients for the following model:
+Once you've got the idea of dummy variables and interactions, you can add as many categorical variables as you deem appropriate.   For example, consider the following model:
 ```{r}
 lm6 = lm(price ~ sqft + nbhd + brick + brick:sqft, data=house)
 coef(lm6)
 ```
 
+Here there are offsets for neighborhoods 2 and 3, as well as for brick houses (brick = Yes).  There are offsets with respect to the baseline case of non-brick houses in neighborhood 1.  
+
+
 ### ANOVA in the presence of correlated predictors  
 
 In the walkthrough on [reaction time in video games](http://jgscott.github.io/teaching/r/rxntime/rxntime.html), we learned that an analysis of variance can be used to partition variation in the outcome among the individual predictor variables in a regression model.  An ANOVA table is constructed by adding variables to the model sequentially, and tracking the amount by which the predictive ability of the model improves at each stage.  We measure the improvement by change in predictable variation (PV), or equivalently the reduction in the residual sums of squares (unpredictable variation, or UV).
 
-If we run an analysis of variance on our final model above, we get the following table.  We'll divide the sales price by $1000 (so that an outcome of 200 corresponds to a $200,000 sales price), just to make the numbers in our ANOVA table a little bit easier to interpret:
+Let's first load in the `simple_anova` command that we used on the video-games data.  This is in the utilities file on my website:  
 ```{r}
-lm6 = lm(price/1000 ~ sqft + nbhd + brick + brick:sqft, data=house)
-anova(lm6)
+# Load some useful utility functions
+source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
 ```
-It looks as though the neighborhood predicts the most variation (change in PV = 34773), followed by sqft (delta-PV = 28036) and then brick (delta-PV = 9646).
+
+
+If we run an analysis of variance on our final model above, we get the following table.  
+```{r}
+lm6 = lm(price ~ sqft + nbhd + brick + brick:sqft, data=house)
+simple_anova(lm6)
+```
+
+It looks as though the neighborhood leads to the largest improvement in predictive power (sd_improve = 7215), followed by sqft (4393) and then brick (2756).  
 
 But what if we arbitrarily change the order in which we add the variables?  
 ```{r}
-lm6alt = lm(price/1000 ~ brick + nbhd + sqft + brick:sqft, data=house)
-anova(lm6alt)
+lm6alt = lm(price ~ brick + nbhd + sqft + brick:sqft, data=house)
+simple_anova(lm6alt)
 ```
 
-Now the importance of brick and neighborhood looks much larger, and the importance of size much smaller.  But the coefficients in the two models are exactly the same:
+Now the importance of brick and neighborhood looks much larger, and the importance of size a bit smaller.  But the coefficients in the two models are exactly the same:
 ```{r}
 coef(lm6)
 coef(lm6alt)

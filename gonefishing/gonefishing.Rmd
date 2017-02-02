@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ## Sampling distributions
@@ -10,7 +8,7 @@ output:
 In this walk-through, you'll learn about sampling distributions.
 
 Data files:  
-* [gonefishing.csv](gonefishing.csv): fictional data on fictional fish in a fictional lake.
+* [gonefishing.csv](http://jgscott.github.io/teaching/data/gonefishing.csv): fictional data on fictional fish in a fictional lake.
 
 As usual, load the mosaic library.
 ```{r, message=FALSE}

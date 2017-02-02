@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
   
 ## Approximating the sampling distribution by bootstrapping
@@ -14,7 +12,7 @@ Learning goals:
 * compute confidence intervals from bootstrapped samples  
 
 Data files:  
-* [creatinine.csv](creatinine.csv): data on age and kidney function for 157 adult males from a single clinic.
+* [creatinine.csv](http://jgscott.github.io/teaching/data/creatinine.csv): data on age and kidney function for 157 adult males from a single clinic.  
 
 Load the mosaic library and then return to the creatinine data set, which we recall had data on the age and kidney function for a sample of men from a single clinic.
 ```{r, message=FALSE}
@@ -166,4 +164,27 @@ confint(myboot2, level=0.8)
 ```
 You will notice that this gives a slightly different answer to the confidence interval we calculated from the quantiles, above.  That's because the default behavior of the `confint' function is to give a confidence interval that is symmetric about the sample mean.  That is, we take the mean of the histogram and step out symmetrically to either side until we cover 80% of the sampling distribution; we call this a "central" confindence interval.  The 80% interval we computed above, on the other hand, contained exactly 10% of the bootstrapped samples in each tail of the histogram; we call this an "equal-tail" confidence interval.  Neither is better than the other; they are simply different conventions.  In the special case where the underlying sampling distribution is exactly symmetric, then the two conventions will give the same answer.
 
+
+### The normal linear regression model  
+
+Most statistical software packages have built-in routines for calculating standard errors and confidence intervals, and will show them as part of a routine summary output for a regression model. R is no exception: the `summary` and `confint` functions do just this.  For example, if we fit the straight line to the creatinine-clearance data and ask for a summary, we get a column of standard errors for each parameter (here labelled "Std. Error"):  
+```{r}
+lm1 = lm(creatclear~age, data=creatinine)
+summary(lm1)
+```
+
+You can also use the `confint` function to get confidence intervals at a specified level:  
+```{r}
+confint(lm1, level = 0.95)
+```
+
+R is definitely not using the bootstrap to calculate these standard errors and confidence intervals. So what is it doing instead?  The short answer is that it is calculating _Gaussian_ standard errors and confidence intervals, which are based on the assumption that the residuals in the regression model follow a Gaussian, or normal, distribution. 
+
+This is a deep topic that we won't treat in detail right now.  For most purposes, however, it’s fine to think of the confidence intervals returned by R's default routines as just an approximation to the bootstrapped confidence intervals you’ve become familiar with.
+
+To be a bit more specific: if you want to rely on these Gaussian confidence intervals, it would be wise to check the validity of the normality assumption:  
+- Do the residuals look normally distributed?  (Make a histogram and check whether the histogram looks normal.)  
+- Do the residuals look like they approximately constant variance?  (Plot the residuals versus the fitted values and look for telltale "fan" shapes.)  
+- Do the residuals look independent of each other?  (Again, plot the residuals versus the fitted values and look for patterns of correlation in adjacent residuals.)  
+If the answer to any of these three questions is no, then you're probably better off with the bootstrapped confidence intervals instead.  Otherwise the Gaussian-based confidence intervals are likely to be a fine approximation.  
 

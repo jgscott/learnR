@@ -1,7 +1,3 @@
----
-layout: post
----
-
 Approximating the sampling distribution by bootstrapping
 --------------------------------------------------------
 
@@ -12,8 +8,10 @@ Learning goals:
 \* compute confidence intervals from bootstrapped samples
 
 Data files:  
-\* [creatinine.csv](creatinine.csv): data on age and kidney function for
-157 adult males from a single clinic.
+\*
+[creatinine.csv](http://jgscott.github.io/teaching/data/creatinine.csv):
+data on age and kidney function for 157 adult males from a single
+clinic.
 
 Load the mosaic library and then return to the creatinine data set,
 which we recall had data on the age and kidney function for a sample of
@@ -75,27 +73,27 @@ command.
     bootstrapped_sample = sample(creatinine, size = 157, replace=TRUE)
     head(bootstrapped_sample, 20)
 
-    ##     age creatclear orig.id
-    ## 19   27      132.8      19
-    ## 148  25      123.0     148
-    ## 115  54      113.9     115
-    ## 103  27      132.0     103
-    ## 138  23      119.9     138
-    ## 79   23      136.2      79
-    ## 20   71      105.5      20
-    ## 43   24      142.9      43
-    ## 64   63      114.6      64
-    ## 61   22      124.0      61
-    ## 122  41      121.5     122
-    ## 8    73      103.0       8
-    ## 95   25      139.7      95
-    ## 12   24      128.6      12
-    ## 58   18      143.8      58
-    ## 25   28      126.8      25
-    ## 73   65       89.3      73
-    ## 23   23      131.2      23
-    ## 121  57      113.4     121
-    ## 74   51      110.4      74
+    ##      age creatclear orig.id
+    ## 6     36      127.0       6
+    ## 38    34      126.0      38
+    ## 154   24      135.3     154
+    ## 41    23      128.7      41
+    ## 44    26      137.9      44
+    ## 45    26      130.3      45
+    ## 7     38      139.5       7
+    ## 75    27      133.3      75
+    ## 10    32      134.7      10
+    ## 139   27      129.8     139
+    ## 20    71      105.5      20
+    ## 89    24      130.2      89
+    ## 75.1  27      133.3      75
+    ## 62    30      124.4      62
+    ## 49    24      129.0      49
+    ## 3     24      145.8       3
+    ## 104   26      129.6     104
+    ## 50    36      134.6      50
+    ## 9     38      115.2       9
+    ## 30    56      112.3      30
 
 If you look carefully, you may see a repeated entry in these first 20
 rows. That's because our bootstrapped sample is a sample with
@@ -104,7 +102,7 @@ ties and omissions with the following plot:
 
     plot(table(bootstrapped_sample$orig.id))
 
-![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-5-1.png)<!-- -->
+![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
 The height of each bar shows how many times that original data point was
 picked. The gaps show data points that were omitted.
@@ -118,7 +116,7 @@ patterns of ties and omissions that arise in each bootstrapped sample.
     bootstrapped_sample = resample(creatinine)  
     plot(table(bootstrapped_sample$orig.id))
 
-![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-6-1.png)<!-- -->
+![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-6-1.png)
 
 ### Bootstrapping the sample mean
 
@@ -140,7 +138,7 @@ different sample means you get for each bootstrapped sample.
     bootstrapped_sample = resample(creatinine)
     mean(bootstrapped_sample$creatclear)
 
-    ## [1] 124.6592
+    ## [1] 124.9943
 
 The final trick is to use the `do` command to automatic the process of
 taking repeated bootstrapped samples and computing the sample mean for
@@ -152,16 +150,16 @@ each one.
     }
 
     ##      result
-    ## 1  124.0675
-    ## 2  125.4312
-    ## 3  125.9962
-    ## 4  127.9217
-    ## 5  125.4713
-    ## 6  125.7452
-    ## 7  124.8115
-    ## 8  125.9662
-    ## 9  125.1796
-    ## 10 125.1981
+    ## 1  124.7611
+    ## 2  125.5624
+    ## 3  124.6771
+    ## 4  125.5790
+    ## 5  126.1140
+    ## 6  124.7140
+    ## 7  125.4510
+    ## 8  123.9255
+    ## 9  124.5605
+    ## 10 123.1822
 
 If this looks unfamiliar, try revisiting the ["Gone
 fishing"](http://jgscott.github.io/teaching/r/gonefishing/gonefishing.html)
@@ -178,11 +176,11 @@ sample mean for each one and visualize the results.
     # Visualize the sampling distribution and compute the bootstrapped standard error
     hist(myboot$result)
 
-![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-9-1.png)<!-- -->
+![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-9-1.png)
 
     sd(myboot$result)
 
-    ## [1] 0.9462928
+    ## [1] 0.9551231
 
 Because we have different bootstrapped samples, your histogram and
 estimated standard error will look slightly different from mine. But
@@ -214,7 +212,7 @@ the relationship between creatinine clearance rate and age:
 
     abline(lm1)
 
-![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-10-1.png)<!-- -->
+![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
 Let's warm-up by computing the OLS estimator for a single bootstrapped
 sample. Try executing this code block 5-10 different times:
@@ -228,7 +226,7 @@ sample. Try executing this code block 5-10 different times:
     ## 
     ## Coefficients:
     ## (Intercept)          age  
-    ##    147.7911      -0.6039
+    ##    149.7146      -0.6648
 
 Notice how the slope and intercept of the fitted line change for each
 sample.
@@ -244,13 +242,13 @@ command to automate the whole process and save the result.
     # Inspect the first several lines
     head(myboot2)
 
-    ##   Intercept        age    sigma r.squared        F numdf dendf
-    ## 1  145.0474 -0.5397870 6.528623 0.6062594 238.6602     1   155
-    ## 2  148.8132 -0.6324065 6.373743 0.7178894 394.4299     1   155
-    ## 3  148.2369 -0.6137878 7.304570 0.6550942 294.3981     1   155
-    ## 4  147.4649 -0.6052031 6.057047 0.7441424 450.8057     1   155
-    ## 5  148.0294 -0.6316402 7.501825 0.6822983 332.8790     1   155
-    ## 6  147.6815 -0.6113110 6.590104 0.6758277 323.1409     1   155
+    ##   Intercept        age    sigma r.squared        F numdf dendf .row .index
+    ## 1  148.4876 -0.6665638 6.483758 0.6955490 354.1132     1   155    1      1
+    ## 2  148.6391 -0.6402596 6.595094 0.6806043 330.2915     1   155    1      2
+    ## 3  148.8856 -0.6505005 7.166824 0.7131784 385.4056     1   155    1      3
+    ## 4  146.8832 -0.5789100 6.662946 0.5973721 229.9708     1   155    1      4
+    ## 5  148.5166 -0.6510012 6.963853 0.6124238 244.9214     1   155    1      5
+    ## 6  146.7119 -0.5863170 6.650395 0.6468713 283.9334     1   155    1      6
 
 Notice that we have separate columns for the intercept, slope on the age
 variable, sigma (the residual standard deviation), and R-squared. (Don't
@@ -259,19 +257,19 @@ distributions for the intercept and slope.
 
     hist(myboot2$Intercept)
 
-![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-13-1.png)<!-- -->
+![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-13-1.png)
 
     sd(myboot2$Intercept)
 
-    ## [1] 1.445293
+    ## [1] 1.42781
 
     hist(myboot2$age)
 
-![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-13-2.png)<!-- -->
+![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-13-2.png)
 
     sd(myboot2$age)
 
-    ## [1] 0.03723882
+    ## [1] 0.03813104
 
 ### Confidence intervals
 
@@ -289,12 +287,12 @@ endpoints on the plot.
     myinterval = quantile(myboot2$age, probs=c(0.1, 0.9))
     abline(v = myinterval, col='blue')
 
-![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-14-1.png)<!-- -->
+![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-14-1.png)
 
     myinterval
 
     ##        10%        90% 
-    ## -0.6665540 -0.5723913
+    ## -0.6697513 -0.5721001
 
 We would refer to this interval as an 80% confidence interval for the
 slope of the age variable in our regression model. (As above, your
@@ -313,20 +311,12 @@ for all model parameters:
 
     confint(myboot2, level=0.8)
 
-    ## Warning: confint: Using df=Inf.
-
-    ##        name       lower       upper level method    estimate
-    ## 1 Intercept 145.9438823 149.6483186   0.8 stderr 147.8129158
-    ## 2       age  -0.6673584  -0.5719115   0.8 stderr  -0.6198159
-    ## 3     sigma   6.3841670   7.3367439   0.8 stderr   6.9105379
-    ## 4 r.squared   0.6224707   0.7236303   0.8 stderr   0.6724361
-    ## 5         F 250.7264505 401.4040296   0.8 stderr 318.1901588
-    ##   margin.of.error
-    ## 1      1.85221814
-    ## 2      0.04772347
-    ## 3      0.47628841
-    ## 4      0.05057979
-    ## 5     75.33878957
+    ##        name       lower       upper level     method    estimate
+    ## 1 Intercept 146.0846735 149.7207063   0.8 percentile 147.8129158
+    ## 2       age  -0.6697513  -0.5721001   0.8 percentile  -0.6198159
+    ## 3     sigma   6.3588459   7.3099395   0.8 percentile   6.9105379
+    ## 4 r.squared   0.6153846   0.7234035   0.8 percentile   0.6724361
+    ## 5         F 248.0000729 405.3830212   0.8 percentile 318.1901588
 
 You will notice that this gives a slightly different answer to the
 confidence interval we calculated from the quantiles, above. That's
@@ -341,3 +331,72 @@ interval. Neither is better than the other; they are simply different
 conventions. In the special case where the underlying sampling
 distribution is exactly symmetric, then the two conventions will give
 the same answer.
+
+### The normal linear regression model
+
+Most statistical software packages have built-in routines for
+calculating standard errors and confidence intervals, and will show them
+as part of a routine summary output for a regression model. R is no
+exception: the `summary` and `confint` functions do just this. For
+example, if we fit the straight line to the creatinine-clearance data
+and ask for a summary, we get a column of standard errors for each
+parameter (here labelled "Std. Error"):
+
+    lm1 = lm(creatclear~age, data=creatinine)
+    summary(lm1)
+
+    ## 
+    ## Call:
+    ## lm(formula = creatclear ~ age, data = creatinine)
+    ## 
+    ## Residuals:
+    ##      Min       1Q   Median       3Q      Max 
+    ## -18.2249  -4.6175   0.2221   4.7212  15.8221 
+    ## 
+    ## Coefficients:
+    ##              Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept) 147.81292    1.37965  107.14   <2e-16 ***
+    ## age          -0.61982    0.03475  -17.84   <2e-16 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 6.911 on 155 degrees of freedom
+    ## Multiple R-squared:  0.6724, Adjusted R-squared:  0.6703 
+    ## F-statistic: 318.2 on 1 and 155 DF,  p-value: < 2.2e-16
+
+You can also use the `confint` function to get confidence intervals at a
+specified level:
+
+    confint(lm1, level = 0.95)
+
+    ##                   2.5 %      97.5 %
+    ## (Intercept) 145.0875702 150.5382614
+    ## age          -0.6884549  -0.5511768
+
+R is definitely not using the bootstrap to calculate these standard
+errors and confidence intervals. So what is it doing instead? The short
+answer is that it is calculating *Gaussian* standard errors and
+confidence intervals, which are based on the assumption that the
+residuals in the regression model follow a Gaussian, or normal,
+distribution.
+
+This is a deep topic that we won't treat in detail right now. For most
+purposes, however, it’s fine to think of the confidence intervals
+returned by R's default routines as just an approximation to the
+bootstrapped confidence intervals you’ve become familiar with.
+
+To be a bit more specific: if you want to rely on these Gaussian
+confidence intervals, it would be wise to check the validity of the
+normality assumption:  
+- Do the residuals look normally distributed? (Make a histogram and
+check whether the histogram looks normal.)  
+- Do the residuals look like they approximately constant variance? (Plot
+the residuals versus the fitted values and look for telltale "fan"
+shapes.)  
+- Do the residuals look independent of each other? (Again, plot the
+residuals versus the fitted values and look for patterns of correlation
+in adjacent residuals.)  
+If the answer to any of these three questions is no, then you're
+probably better off with the bootstrapped confidence intervals instead.
+Otherwise the Gaussian-based confidence intervals are likely to be a
+fine approximation.
