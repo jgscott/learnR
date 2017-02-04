@@ -73,27 +73,27 @@ command.
     bootstrapped_sample = sample(creatinine, size = 157, replace=TRUE)
     head(bootstrapped_sample, 20)
 
-    ##       age creatclear orig.id
-    ## 21     73      108.8      21
-    ## 53     32      137.9      53
-    ## 144    45      117.8     144
-    ## 130    32      126.6     130
-    ## 148    25      123.0     148
-    ## 135    74       96.6     135
-    ## 108    24      131.7     108
-    ## 93     21      135.9      93
-    ## 119    25      140.8     119
-    ## 57     61      118.6      57
-    ## 133    43      123.2     133
-    ## 18     34      128.6      18
-    ## 115    54      113.9     115
-    ## 46     31      133.9      46
-    ## 144.1  45      117.8     144
-    ## 60     39      124.6      60
-    ## 41     23      128.7      41
-    ## 80     37      121.3      80
-    ## 24     23      133.9      24
-    ## 31     32      117.5      31
+    ##      age creatclear orig.id
+    ## 133   43      123.2     133
+    ## 150   62      114.7     150
+    ## 45    26      130.3      45
+    ## 45.1  26      130.3      45
+    ## 119   25      140.8     119
+    ## 83    31      131.6      83
+    ## 125   24      129.6     125
+    ## 148   25      123.0     148
+    ## 25    28      126.8      25
+    ## 153   23      127.9     153
+    ## 9     38      115.2       9
+    ## 8     73      103.0       8
+    ## 141   28      125.1     141
+    ## 101   26      138.5     101
+    ## 130   32      126.6     130
+    ## 122   41      121.5     122
+    ## 113   63      112.5     113
+    ## 57    61      118.6      57
+    ## 74    51      110.4      74
+    ## 52    27      130.9      52
 
 If you look carefully, you may see a repeated entry in these first 20
 rows. That's because our bootstrapped sample is a sample with
@@ -138,7 +138,7 @@ different sample means you get for each bootstrapped sample.
     bootstrapped_sample = resample(creatinine)
     mean(bootstrapped_sample$creatclear)
 
-    ## [1] 124.8217
+    ## [1] 124.514
 
 The final trick is to use the `do` command to automatic the process of
 taking repeated bootstrapped samples and computing the sample mean for
@@ -150,16 +150,16 @@ each one.
     }
 
     ##      result
-    ## 1  126.8019
-    ## 2  123.8828
-    ## 3  125.7191
-    ## 4  126.9376
-    ## 5  125.8873
-    ## 6  124.5503
-    ## 7  125.3854
-    ## 8  124.3280
-    ## 9  125.8242
-    ## 10 124.7159
+    ## 1  126.7376
+    ## 2  125.8503
+    ## 3  127.3510
+    ## 4  124.5248
+    ## 5  127.4191
+    ## 6  125.8497
+    ## 7  124.2701
+    ## 8  124.0465
+    ## 9  125.9783
+    ## 10 125.6064
 
 If this looks unfamiliar, try revisiting the ["Gone
 fishing"](http://jgscott.github.io/teaching/r/gonefishing/gonefishing.html)
@@ -180,7 +180,7 @@ sample mean for each one and visualize the results.
 
     sd(myboot$result)
 
-    ## [1] 0.9392241
+    ## [1] 0.9208574
 
 Because we have different bootstrapped samples, your histogram and
 estimated standard error will look slightly different from mine. But
@@ -226,7 +226,7 @@ sample. Try executing this code block 5-10 different times:
     ## 
     ## Coefficients:
     ## (Intercept)          age  
-    ##    146.4965      -0.6011
+    ##    150.5431      -0.6824
 
 Notice how the slope and intercept of the fitted line change for each
 sample.
@@ -243,12 +243,12 @@ command to automate the whole process and save the result.
     head(myboot2)
 
     ##   Intercept        age    sigma r.squared        F numdf dendf .row .index
-    ## 1  148.2290 -0.6327054 6.787903 0.6262125 259.6741     1   155    1      1
-    ## 2  148.8770 -0.6332059 6.913182 0.6499207 287.7568     1   155    1      2
-    ## 3  148.6194 -0.6349592 6.703134 0.6934170 350.5727     1   155    1      3
-    ## 4  146.1254 -0.5865175 7.251837 0.6332982 267.6868     1   155    1      4
-    ## 5  148.2196 -0.6398906 6.912309 0.7048450 370.1479     1   155    1      5
-    ## 6  147.6896 -0.6231221 7.205105 0.6624543 304.1971     1   155    1      6
+    ## 1  146.5953 -0.5539220 6.979254 0.6380754 273.2660     1   155    1      1
+    ## 2  146.0221 -0.5601161 7.996567 0.5505381 189.8568     1   155    1      2
+    ## 3  148.0365 -0.6181531 6.878273 0.7018148 364.8113     1   155    1      3
+    ## 4  150.3503 -0.7051662 6.436485 0.6970664 356.6632     1   155    1      4
+    ## 5  149.2101 -0.6572372 6.290953 0.7603602 491.8041     1   155    1      5
+    ## 6  149.3291 -0.6452266 6.892803 0.7063523 372.8434     1   155    1      6
 
 Notice that we have separate columns for the intercept, slope on the age
 variable, sigma (the residual standard deviation), and R-squared. (Don't
@@ -261,7 +261,7 @@ distributions for the intercept and slope.
 
     sd(myboot2$Intercept)
 
-    ## [1] 1.421574
+    ## [1] 1.480747
 
     hist(myboot2$age)
 
@@ -269,7 +269,7 @@ distributions for the intercept and slope.
 
     sd(myboot2$age)
 
-    ## [1] 0.03839219
+    ## [1] 0.03944745
 
 ### Confidence intervals
 
@@ -292,7 +292,7 @@ endpoints on the plot.
     myinterval
 
     ##        10%        90% 
-    ## -0.6702646 -0.5749208
+    ## -0.6705294 -0.5725388
 
 We would refer to this interval as an 80% confidence interval for the
 slope of the age variable in our regression model. (As above, your
@@ -312,11 +312,11 @@ for all model parameters:
     confint(myboot2, level=0.8)
 
     ##        name       lower       upper level     method    estimate
-    ## 1 Intercept 146.0836313 149.6998619   0.8 percentile 147.8129158
-    ## 2       age  -0.6702646  -0.5749208   0.8 percentile  -0.6198159
-    ## 3     sigma   6.3414062   7.3740700   0.8 percentile   6.9105379
-    ## 4 r.squared   0.6154664   0.7243072   0.8 percentile   0.6724361
-    ## 5         F 248.0859838 407.2199786   0.8 percentile 318.1901588
+    ## 1 Intercept 146.0341078 149.7247575   0.8 percentile 147.8129158
+    ## 2       age  -0.6705294  -0.5725388   0.8 percentile  -0.6198159
+    ## 3     sigma   6.3707481   7.3098796   0.8 percentile   6.9105379
+    ## 4 r.squared   0.6177443   0.7269072   0.8 percentile   0.6724361
+    ## 5         F 250.4877322 412.5727339   0.8 percentile 318.1901588
 
 You will notice that this gives a slightly different answer to the
 confidence interval we calculated from the quantiles, above. That's
@@ -409,9 +409,12 @@ look approximately normal? We will make a histogram and check:
 
 ![](creatinine_bootstrap_files/figure-markdown_strict/unnamed-chunk-19-1.png)
 
-It seems so. Second, do the residuals look like they have approximately
-constant variance? We will plot the residuals versus the fitted values
-and see whether there are any "fan" shapes:
+This histogram shows no obvious departures from normality, so we're good
+on the first question.
+
+Second, do the residuals look like they have approximately constant
+variance? We will plot the residuals versus the fitted values and see
+whether there are any "fan" shapes:
 
     plot(resid(lm1) ~ fitted(lm1))
 
@@ -420,8 +423,9 @@ and see whether there are any "fan" shapes:
 There are no fan shapes here; the residuals exhibit a similar scale of
 variation regardless of the fitted value from the regression model.
 
-The same plot above also gives us an answer to the third question: do
-the residuals look independent of each other? We do not see any obvious
+The same plot above, of the residuals versus the fitted values, also
+gives us an answer to the third question: do the residuals look
+independent of each other? Yes, they do. We do not see any obvious
 patterns of dependence, in which adjacent residuals look more similar to
 each other than far-apart residuals.
 
@@ -433,11 +437,11 @@ intervals and the Gaussian confidence intervals are nearly identical:
     confint(myboot2)
 
     ##        name       lower       upper level     method    estimate
-    ## 1 Intercept 145.1780197 150.7291912  0.95 percentile 147.8129158
-    ## 2       age  -0.7025909  -0.5465182  0.95 percentile  -0.6198159
-    ## 3     sigma   6.0970427   7.6388917  0.95 percentile   6.9105379
-    ## 4 r.squared   0.5773234   0.7476787  0.95 percentile   0.6724361
-    ## 5         F 211.7106819 459.2972818  0.95 percentile 318.1901588
+    ## 1 Intercept 144.9066372 150.7918606  0.95 percentile 147.8129158
+    ## 2       age  -0.7026099  -0.5497488  0.95 percentile  -0.6198159
+    ## 3     sigma   6.1324210   7.5942863  0.95 percentile   6.9105379
+    ## 4 r.squared   0.5815549   0.7490051  0.95 percentile   0.6724361
+    ## 5         F 215.4189249 462.5423914  0.95 percentile 318.1901588
 
     confint(lm1)
 
