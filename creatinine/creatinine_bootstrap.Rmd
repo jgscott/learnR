@@ -184,7 +184,28 @@ This is a deep topic that we won't treat in detail right now.  For most purposes
 
 To be a bit more specific: if you want to rely on these Gaussian confidence intervals, it would be wise to check the validity of the normality assumption:  
 - Do the residuals look normally distributed?  (Make a histogram and check whether the histogram looks normal.)  
-- Do the residuals look like they approximately constant variance?  (Plot the residuals versus the fitted values and look for telltale "fan" shapes.)  
+- Do the residuals look like they have approximately constant variance?  (Plot the residuals versus the fitted values and look for telltale "fan" shapes.)  
 - Do the residuals look independent of each other?  (Again, plot the residuals versus the fitted values and look for patterns of correlation in adjacent residuals.)  
+
 If the answer to any of these three questions is no, then you're probably better off with the bootstrapped confidence intervals instead.  Otherwise the Gaussian-based confidence intervals are likely to be a fine approximation.  
 
+Let's try these questions with the model above.  First, do the residuals look approximately normal?  We will make a histogram and check:  
+```{r}
+hist(resid(lm1))
+```
+
+It seems so.  Second, do the residuals look like they have approximately constant variance?  We will plot the residuals versus the fitted values and see whether there are any "fan" shapes:  
+```{r}
+plot(resid(lm1) ~ fitted(lm1))
+```
+
+There are no fan shapes here; the residuals exhibit a similar scale of variation regardless of the fitted value from the regression model.
+
+The same plot above also gives us an answer to the third question: do the residuals look independent of each other?  We do not see any obvious patterns of dependence, in which adjacent residuals look more similar to each other than far-apart residuals.  
+
+Therefore, in light of the answers to these three questions, we are safe to use the standard errors and confidence intervals from the Gaussian (normal) model.  You'll notice, in fact, that the bootstrapped confidence intervals and the Gaussian confidence intervals are nearly identical:  
+
+```{r}
+confint(myboot2)
+confint(lm1)
+``` 
