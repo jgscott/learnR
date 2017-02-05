@@ -1,0 +1,57 @@
+---
+output:
+  md_document
+---
+  
+## Prediction intervals and heteroskedasticity
+  
+Learning goals:  
+- Diagnose heteroskedasticity  
+- Fix prediction intervals to account for heteroskedasticity  
+
+Data files:  
+* [afc.csv](http://jgscott.github.io/teaching/data/afc.csv): Austin food critics data set.  
+
+```{r, echo=FALSE}
+afc = read.csv('afc.csv')
+```
+
+After downloading the "afc.csv" file and loading it in, you should first load the mosaic library.  
+```{r, message=FALSE}
+library(mosaic)
+```
+
+
+
+```{r}
+plot(Price ~ FoodScore, data = afc)
+lm1 = lm(Price ~ FoodScore, data = afc)
+abline(lm1)
+```
+
+```{r}
+postdiction = predict(lm1, newdata=afc, interval = 'prediction', level = 0.8)
+```
+
+Now let's add the prediction intervals to the plot:
+```{r}
+plot(Price ~ FoodScore, data = afc)
+points(postdiction[,2] ~ FoodScore, data=afc, col='red', pch=19) # lower bound
+points(postdiction[,3] ~ FoodScore, data=afc, col='red', pch=19) # upper bound
+```
+
+These look really ugly!  They're too wide for low food scores, and too narrow for high food scores.
+
+### Prediction intervals using quantile regression
+
+```{r}
+library(quantreg)  # must install first
+q10 = rq(Price ~ FoodScore, tau = 0.1, data= afc)
+q90 = rq(Price ~ FoodScore, tau = 0.9, data= afc)
+```
+
+```{r}
+plot(Price ~ FoodScore, data = afc)
+points(fitted(q10) ~ FoodScore, data=afc, col='red', pch=19) # lower bound
+points(fitted(q90) ~ FoodScore, data=afc, col='red', pch=19) # upper bound
+```
