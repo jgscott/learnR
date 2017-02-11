@@ -1,22 +1,14 @@
----
-layout: page
----
-
 Hourly wages in the Current Population Survey
 ---------------------------------------------
 
-Learning goals:  
-\* observe how and why collinearity impacts an ANOVA table for a
-multiple regression model.  
-\* use AIC to judge the fit-simplicity tradeoff when deciding whether to
-include a variable in a model.  
-\* choose a subset of variables in a regression model via stepwise
-selection.
+Learning goal:  
+- observe how and why collinearity affects the estimated coefficient and
+the ANOVA table for a multiple regression model.
 
 Data files:  
-\* [cps.csv](cps.csv): data from the [Current Population
-Survey](http://www.census.gov/cps/)], a major source of data about the
-American labor force.
+- [http://jgscott.github.io/teaching/data/cps.csv](cps.csv): data from
+the [Current Population Survey](http://www.census.gov/cps/)\], a major
+source of data about the American labor force.
 
 ### ANOVA tables in multiple regression
 
@@ -24,7 +16,7 @@ We'll start by loading the mosaic library, reading in the CPS data set,
 and summarizing the variables.
 
     library(mosaic)
-    cps = read.csv("cps.csv", header=TRUE)
+    cps = read.csv("cps.csv", header=TRUE)  # Or use Import Dataset
     summary(cps)
 
     ##       wage             educ       race     sex     hispanic   south   
@@ -44,21 +36,21 @@ and summarizing the variables.
     ##                Max.   :55.00               Max.   :64.00   manag   : 55  
     ##                                                            (Other) : 58
 
-There are 11 variables in this data set: \* wage: a person's hourly wage
-in dollars (the data is from 1985).  
-\* educ: number of years of formal education. Here 12 indicates the
+There are 11 variables in this data set:  
+- wage: a person's hourly wage in dollars (the data is from 1985).  
+- educ: number of years of formal education. Here 12 indicates the
 completion of high school.  
-\* race: white or non-white.  
-\* sex: male or female.  
-\* hispanic: an indicator of whether the person is Hispanic or
+- race: white or non-white.  
+- sex: male or female.  
+- hispanic: an indicator of whether the person is Hispanic or
 non-Hispanic.  
-\* south: does the person live in a southern (S) or non-southern (NS)
+- south: does the person live in a southern (S) or non-southern (NS)
 state?  
-\* married: is the person married or single?  
-\* exper: number of years of work experience  
-\* union: an indicator for whether the person is in a union or not.  
-\* age: age in years  
-\* sector: clerical, construction, management, manufacturing,
+- married: is the person married or single?  
+- exper: number of years of work experience  
+- union: an indicator for whether the person is in a union or not.  
+- age: age in years  
+- sector: clerical, construction, management, manufacturing,
 professional (lawyer/doctor/accountant/etc), sales, service, or other.
 
 First consider a two-variable regression model that uses a person's
@@ -135,59 +127,56 @@ commutative](http://en.wikipedia.org/wiki/Commutative_property).) This
 is comforting: it means our model doesn't depend on some arbitrary
 choice of how to order the variables.
 
-However, the ANOVA tables for the two models are different. In the first
-table, it looks like education contributes more to the predictive
-abilities of the model than sector of employment:
+However, the ANOVA tables for the two models are different. Let's use
+the `simple_anova` function from my website:
 
-    anova(lm1)
+    source('http://jgscott.github.io/teaching/r/utils/class_utils.R')
 
-    ## Analysis of Variance Table
-    ## 
-    ## Response: wage
-    ##            Df  Sum Sq Mean Sq F value    Pr(>F)    
-    ## educ        1  2053.3 2053.29 99.0165 < 2.2e-16 ***
-    ## sector      7  1136.6  162.37  7.8298 4.917e-09 ***
-    ## Residuals 525 10886.8   20.74                      
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+Now we'll use this to construct an ANOVA table. In the first table, it
+looks like education contributes more to the fit of the model than
+sector of employment:
 
-In the second table, while the residual sum of squares is the same as
-for the first table, it now looks like a person's sector of employment
-contributes more than his or her education:
+    simple_anova(lm1)
 
-    anova(lm2)
+    ##            Df      R2 R2_improve     sd sd_improve       pval
+    ## Intercept   1 0.00000            5.1391                      
+    ## educ        1 0.14586   0.145864 4.7540    0.38511 0.0000e+00
+    ## sector      7 0.22661   0.080741 4.5538    0.20021 4.9169e-09
+    ## Residuals 525
 
-    ## Analysis of Variance Table
-    ## 
-    ## Response: wage
-    ##            Df  Sum Sq Mean Sq F value    Pr(>F)    
-    ## sector      7  2571.6  367.37  17.716 < 2.2e-16 ***
-    ## educ        1   618.3  618.28  29.816 7.342e-08 ***
-    ## Residuals 525 10886.8   20.74                      
-    ## ---
-    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+In the second table, it now looks like a person's sector of employment
+contributes more to the fit than his or her education:
+
+    simple_anova(lm2)
+
+    ##            Df      R2 R2_improve     sd sd_improve       pval
+    ## Intercept   1 0.00000            5.1391                      
+    ## sector      7 0.18268   0.182683 4.6768    0.46225 0.0000e+00
+    ## educ        1 0.22661   0.043922 4.5538    0.12307 7.3424e-08
+    ## Residuals 525
 
 In other words, the ANOVA table usually *does* depend on the order in
 which we name the variables, even though the model itself does not. The
 only exception is when the variables are independent of one another.
 This exception doesn't apply here, because some sectors of the economy
-have more educated workers than other sectors"
+have more educated workers than other sectors. Said concisely, the two
+variables are correlated (collinear) with each other:
 
     bwplot(educ ~ sector, data=cps)
 
-![](cps_files/figure-markdown_strict/unnamed-chunk-6-1.png)
+![](cps_files/figure-markdown_strict/unnamed-chunk-7-1.png)
 
 We therefore reach an important conclusion about the ANOVA table for a
 multiple-regression model:  
-\* The ANOVA table attempts to partition credit among the variables by
+- The ANOVA table attempts to partition credit among the variables by
 measuring their contribution to the model's predictable sums of squares.
 More specifically, it assigns credit by adding the variables one at a
 time and measuring the corresponding decrease in the residual sum of
 squares.  
-\* But the table depends on the ordering of the variables, and the
+- But the table depends on the ordering of the variables, and the
 ordering of the variables is arbitrary.  
-\* We therefore cannot give credit to the individual variables in a
-model without making an arbitrary decision about their order.
+- We therefore cannot give credit to the individual variables in a model
+without making an arbitrary decision about their order.
 
 Though this seems like a paradox, it's really a manifestation of a
 broader concept. In a regression model, the variables work as a team.
@@ -196,192 +185,115 @@ team---whether it's a team of lawyers, film-makers, or basketball
 players---except in the rare case where the individuals contribute to
 the team in totally independent ways.
 
-### Choosing a model by greedy backward selection
+### Adding collinear variables to a model
 
-We have learned that it is difficult to partition credit among the
-individual variables in a model. Because of this, the problem of
-*variable selection*, or choosing which variables to include in a model
-in a way that optimally balances fit and simplicity, is also difficult.
+In the presence of collinearity, adding new variables to a baseline
+model will change the coefficients of the old variables. That's
+because:  
+- a coefficient in a multiple regression model is a *partial
+relationship* between the predictor and the response, holding other
+variables constant  
+- a partial relationship depends on context, i.e. on what variables are
+being held constant.  
+- changing the context (by adding new variables) will therefore change
+the partial relationship.
 
-There is no single, objectively correct approach to variable selection.
-But all such approaches must confront two basic questions:  
-1) How should we prioritize the tradeoff between fit and simplicity?  
-2) How should we actually find the model that exhibits the best
-tradeoff?
+Let's see this principle in action, starting with a baseline model of
+wages versus a sector of employment, education level, and whether a
+worker is a member of union.
 
-The commands below show you how to implement a particular approach to
-variable selection called the stepwise AIC method. (AIC stands for
-["Akaike's Information
-Criterion."](http://en.wikipedia.org/wiki/Akaike_information_criterion))
-This method measures the fit/simplicity tradeoff using a somewhat
-complicated formula involving the residual sums of squares and the
-number of parameters in the model. Smaller values of AIC are better.
+    lm3 = lm(wage ~ sector + educ + union, data=cps)
+    summary(lm3)
 
-To see stepwise AIC selection in action, we will start with a model of
-wages that uses most of the other predictors in the data set.
-
-    lm2 = lm(wage ~ educ + sector + age + sex + south + married + race + union, data=cps)
-    anova(lm2)
-
-    ## Analysis of Variance Table
     ## 
-    ## Response: wage
-    ##            Df Sum Sq Mean Sq  F value    Pr(>F)    
-    ## educ        1 2053.3 2053.29 111.6081 < 2.2e-16 ***
-    ## sector      7 1136.6  162.37   8.8255 2.809e-10 ***
-    ## age         1  667.7  667.73  36.2948 3.216e-09 ***
-    ## sex         1  396.1  396.05  21.5276 4.421e-06 ***
-    ## south       1   70.0   70.00   3.8046  0.051649 .  
-    ## married     1   19.4   19.36   1.0523  0.305466    
-    ## race        1   19.3   19.29   1.0485  0.306328    
-    ## union       1  166.2  166.21   9.0347  0.002777 ** 
-    ## Residuals 519 9548.2   18.40                       
+    ## Call:
+    ## lm(formula = wage ~ sector + educ + union, data = cps)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -10.263  -2.872  -0.852   2.197  32.215 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)    0.62407    1.30962   0.477   0.6339    
+    ## sectorconst    2.39793    1.12288   2.136   0.0332 *  
+    ## sectormanag    4.50326    0.77250   5.829 9.73e-09 ***
+    ## sectormanuf    1.10084    0.73482   1.498   0.1347    
+    ## sectorother    1.20935    0.72441   1.669   0.0956 .  
+    ## sectorprof     2.84034    0.68382   4.154 3.82e-05 ***
+    ## sectorsales    0.15584    0.85841   0.182   0.8560    
+    ## sectorservice -0.47462    0.68529  -0.693   0.4889    
+    ## educ           0.51127    0.09499   5.383 1.11e-07 ***
+    ## unionUnion     2.22675    0.52087   4.275 2.27e-05 ***
     ## ---
     ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-The ANOVA table gives you an idea of which variables might be good
-candidates to drop. But we've learned to be somewhat skeptical the ANOVA
-table in situations where the predictors are correlated. Moreover, it
-would be tedious to go in and drop each variable one by one to see its
-effect on the model. Luckily, the handy "drop1" function automates this
-process for us:
-
-    drop1(lm2)
-
-    ## Single term deletions
     ## 
-    ## Model:
-    ## wage ~ educ + sector + age + sex + south + married + race + union
-    ##         Df Sum of Sq     RSS    AIC
-    ## <none>                9548.2 1569.9
-    ## educ     1    707.85 10256.1 1606.1
-    ## sector   7    658.05 10206.3 1591.5
-    ## age      1    502.68 10050.9 1595.3
-    ## sex      1    356.89  9905.1 1587.5
-    ## south    1     46.25  9594.5 1570.5
-    ## married  1     10.76  9559.0 1568.5
-    ## race     1     31.18  9579.4 1569.6
-    ## union    1    166.21  9714.4 1577.1
+    ## Residual standard error: 4.481 on 524 degrees of freedom
+    ## Multiple R-squared:  0.2527, Adjusted R-squared:  0.2398 
+    ## F-statistic: 19.68 on 9 and 524 DF,  p-value: < 2.2e-16
 
-This function considers all possible one-variable deletions from the
-model and calculates the residual sum of squares and AIC for each
-candidate. In this case, it looks like the model in which the "married"
-variable is dropped leads to the smallest AIC. If we wanted to, we could
-repeat this process starting from the model without this variable:
+Look at the coefficient on the union dummy variable: it looks like the
+wage premium for union members is about $2.20 per hour, holding
+education and employment sector constant.
 
-    lm3 = lm(wage ~ educ + sector + age + sex + south + race + union, data=cps)
-    drop1(lm3)
+But look at what happens when we add age to the model:
 
-    ## Single term deletions
-    ## 
-    ## Model:
-    ## wage ~ educ + sector + age + sex + south + race + union
-    ##        Df Sum of Sq     RSS    AIC
-    ## <none>               9559.0 1568.5
-    ## educ    1    702.56 10261.5 1604.4
-    ## sector  7    669.86 10228.8 1590.7
-    ## age     1    577.03 10136.0 1597.8
-    ## sex     1    355.51  9914.5 1586.0
-    ## south   1     45.06  9604.0 1569.0
-    ## race    1     32.64  9591.6 1568.3
-    ## union   1    173.60  9732.6 1576.1
+    lm4 = lm(wage ~ sector + educ + union + age, data=cps)
+    summary(lm4)
 
-It looks now like deleting "race" would lead to a slight improvement in
-AIC.
+    ## 
+    ## Call:
+    ## lm(formula = wage ~ sector + educ + union + age, data = cps)
+    ## 
+    ## Residuals:
+    ##     Min      1Q  Median      3Q     Max 
+    ## -10.289  -2.769  -0.647   2.044  33.845 
+    ## 
+    ## Coefficients:
+    ##               Estimate Std. Error t value Pr(>|t|)    
+    ## (Intercept)   -4.10664    1.55576  -2.640 0.008547 ** 
+    ## sectorconst    2.51598    1.09493   2.298 0.021964 *  
+    ## sectormanag    4.11110    0.75671   5.433 8.51e-08 ***
+    ## sectormanuf    1.33473    0.71773   1.860 0.063495 .  
+    ## sectorother    1.71997    0.71272   2.413 0.016154 *  
+    ## sectorprof     2.53735    0.66909   3.792 0.000167 ***
+    ## sectorsales   -0.00088    0.83739  -0.001 0.999162    
+    ## sectorservice -0.38637    0.66831  -0.578 0.563419    
+    ## educ           0.62607    0.09508   6.584 1.11e-10 ***
+    ## unionUnion     1.81954    0.51353   3.543 0.000431 ***
+    ## age            0.08980    0.01687   5.322 1.53e-07 ***
+    ## ---
+    ## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+    ## 
+    ## Residual standard error: 4.368 on 523 degrees of freedom
+    ## Multiple R-squared:  0.2911, Adjusted R-squared:  0.2775 
+    ## F-statistic: 21.47 on 10 and 523 DF,  p-value: < 2.2e-16
 
-This procedure---sequentially pruning variables in a way that makes AIC
-as small as possible---is often called "greedy backward selection." It's
-"backward" because we start from a large model and prune downwards, and
-it's "greedy" because at each stage we delete the single worst variable,
-as measured by AIC.
+Now our estimate of the wage premium for union members is a lot less:
+about $1.80 per hour rather than $2.20. What happened?
 
-In large models, doing this by hand can become tedious. To automate the
-process, use the "step" function, starting from the largest candidate
-model:
+Well, union members tend to be older than non-union members (i.e. union
+status and age are correlated/collinear):
 
-    lm4 = lm(wage ~ educ + sector + age + sex + south + married + race + union + sex:age, data=cps)
-    lmstep = step(lm4, direction='backward')
+    mean(age ~ union, data=cps)
 
-    ## Start:  AIC=1567.36
-    ## wage ~ educ + sector + age + sex + south + married + race + union + 
-    ##     sex:age
-    ## 
-    ##           Df Sum of Sq     RSS    AIC
-    ## - married  1      4.63  9471.9 1565.6
-    ## - race     1     23.47  9490.8 1566.7
-    ## <none>                  9467.3 1567.4
-    ## - south    1     51.73  9519.0 1568.3
-    ## - age:sex  1     80.89  9548.2 1569.9
-    ## - union    1    148.74  9616.1 1573.7
-    ## - sector   7    612.00 10079.3 1586.8
-    ## - educ     1    731.75 10199.1 1605.1
-    ## 
-    ## Step:  AIC=1565.62
-    ## wage ~ educ + sector + age + sex + south + race + union + age:sex
-    ## 
-    ##           Df Sum of Sq     RSS    AIC
-    ## - race     1     24.08  9496.0 1565.0
-    ## <none>                  9471.9 1565.6
-    ## - south    1     51.08  9523.0 1566.5
-    ## - age:sex  1     87.02  9559.0 1568.5
-    ## - union    1    152.84  9624.8 1572.2
-    ## - sector   7    617.52 10089.5 1585.3
-    ## - educ     1    729.02 10201.0 1603.2
-    ## 
-    ## Step:  AIC=1564.98
-    ## wage ~ educ + sector + age + sex + south + union + age:sex
-    ## 
-    ##           Df Sum of Sq     RSS    AIC
-    ## <none>                  9496.0 1565.0
-    ## - south    1     58.54  9554.6 1566.3
-    ## - age:sex  1     95.59  9591.6 1568.3
-    ## - union    1    142.58  9638.6 1570.9
-    ## - sector   7    635.08 10131.1 1585.5
-    ## - educ     1    727.18 10223.2 1602.4
+    ##      Not    Union 
+    ## 36.17808 39.82292
 
-If we change the flag specifying `direction='backward'` to
-`direction='both'`, we are allowing the possibility that a variable,
-once deleted, can be re-introduced at some point later on in the
-step-wise procedure:
+And older works tend to earn more on average, than younger workers (the
+correlation is about 17%):
 
-    lmstep = step(lm4, direction='both')
+    cor(wage ~ age, data=cps)
 
-    ## Start:  AIC=1567.36
-    ## wage ~ educ + sector + age + sex + south + married + race + union + 
-    ##     sex:age
-    ## 
-    ##           Df Sum of Sq     RSS    AIC
-    ## - married  1      4.63  9471.9 1565.6
-    ## - race     1     23.47  9490.8 1566.7
-    ## <none>                  9467.3 1567.4
-    ## - south    1     51.73  9519.0 1568.3
-    ## - age:sex  1     80.89  9548.2 1569.9
-    ## - union    1    148.74  9616.1 1573.7
-    ## - sector   7    612.00 10079.3 1586.8
-    ## - educ     1    731.75 10199.1 1605.1
-    ## 
-    ## Step:  AIC=1565.62
-    ## wage ~ educ + sector + age + sex + south + race + union + age:sex
-    ## 
-    ##           Df Sum of Sq     RSS    AIC
-    ## - race     1     24.08  9496.0 1565.0
-    ## <none>                  9471.9 1565.6
-    ## - south    1     51.08  9523.0 1566.5
-    ## + married  1      4.63  9467.3 1567.4
-    ## - age:sex  1     87.02  9559.0 1568.5
-    ## - union    1    152.84  9624.8 1572.2
-    ## - sector   7    617.52 10089.5 1585.3
-    ## - educ     1    729.02 10201.0 1603.2
-    ## 
-    ## Step:  AIC=1564.98
-    ## wage ~ educ + sector + age + sex + south + union + age:sex
-    ## 
-    ##           Df Sum of Sq     RSS    AIC
-    ## <none>                  9496.0 1565.0
-    ## + race     1     24.08  9471.9 1565.6
-    ## - south    1     58.54  9554.6 1566.3
-    ## + married  1      5.24  9490.8 1566.7
-    ## - age:sex  1     95.59  9591.6 1568.3
-    ## - union    1    142.58  9638.6 1570.9
-    ## - sector   7    635.08 10131.1 1585.5
-    ## - educ     1    727.18 10223.2 1602.4
+    ## [1] 0.1769669
+
+That makes age a confounding variable for the relationship between union
+status and wages. Controlling for this confounding variable changes our
+estimate of the wage premium for union membership: some (but not all) of
+the variation in wages that we previously were attributing to union
+membership now gets attributed to age, instead.
+
+This is a very general phenomenon in multiple regression modeling. If
+you add a variable to a baseline model, and that variable is correlated
+with some of the variables already in the model, then the coefficients
+on those old variables will change in the new model.

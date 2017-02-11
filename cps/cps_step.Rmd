@@ -1,0 +1,119 @@
+---
+output:
+  md_document:
+    includes:
+      in_header: ../header.txt
+---
+
+## Hourly wages in the Current Population Survey
+
+Learning goals:  
+* observe how and why collinearity impacts an ANOVA table for a multiple regression model.  
+* use AIC to judge the fit-simplicity tradeoff when deciding whether to include a variable in a model.  
+* choose a subset of variables in a regression model via stepwise selection.     
+
+
+Data files:  
+* [cps.csv](cps.csv): data from the [Current Population Survey](http://www.census.gov/cps/)], a major source of data about the American labor force.
+
+
+### ANOVA tables in multiple regression  
+
+We'll start by loading the mosaic library, reading in the CPS data set, and summarizing the variables.
+```{r, message=FALSE}
+library(mosaic)
+cps = read.csv("cps.csv", header=TRUE)
+summary(cps)
+```
+
+There are 11 variables in this data set:
+* wage: a person's hourly wage in dollars (the data is from 1985).  
+* educ: number of years of formal education.  Here 12 indicates the completion of high school.  
+* race: white or non-white.      
+* sex: male or female.  
+* hispanic: an indicator of whether the person is Hispanic or non-Hispanic.  
+* south: does the person live in a southern (S) or non-southern (NS) state?  
+* married: is the person married or single?  
+* exper: number of years of work experience  
+* union: an indicator for whether the person is in a union or not.  
+* age: age in years  
+* sector: clerical, construction, management, manufacturing, professional (lawyer/doctor/accountant/etc), sales, service, or other.
+
+
+First consider a two-variable regression model that uses a person's education level and sector of employment as predictors of his or her wage:
+```{r}
+lm1 = lm(wage ~ educ + sector, data=cps)
+summary(lm1)
+```
+
+Now see what happens when we switch the order of the two variables:
+```{r}
+lm2 = lm(wage ~ sector + educ, data=cps)
+summary(lm2)
+```
+
+In a word, nothing!  The coefficients, standard errors, t statistics, and p-values are all the same.  That's because the model itself---that is, the underlying regression equation relating the outcome to the predictors---is the same regardless of the order in which we name the variables.  (That's because we add the individual terms in the regression equation together, and [addition is commutative](http://en.wikipedia.org/wiki/Commutative_property).)  This is comforting: it means our model doesn't depend on some arbitrary choice of how to order the variables.
+
+However, the ANOVA tables for the two models are different.  In the first table, it looks like education contributes more to the predictive abilities of the model than sector of employment:
+```{r}
+anova(lm1)
+```
+
+In the second table, while the residual sum of squares is the same as for the first table, it now looks like a person's sector of employment contributes more than his or her education:
+```{r}
+anova(lm2)
+```
+
+In other words, the ANOVA table usually *does* depend on the order in which we name the variables, even though the model itself does not.  The only exception is when the variables are independent of one another.  This exception doesn't apply here, because some sectors of the economy have more educated workers than other sectors"
+```{r}
+bwplot(educ ~ sector, data=cps)
+```
+
+We therefore reach an important conclusion about the ANOVA table for a multiple-regression model:  
+* The ANOVA table attempts to partition credit among the variables by measuring their contribution to the model's predictable sums of squares.   More specifically, it assigns credit by adding the variables one at a time and measuring the corresponding decrease in the residual sum of squares.  
+* But the table depends on the ordering of the variables, and the ordering of the variables is arbitrary.  
+*  We therefore cannot give credit to the individual variables in a model without making an arbitrary decision about their order.  
+
+Though this seems like a paradox, it's really a manifestation of a broader concept.  In a regression model, the variables work as a team.  And it is difficult to partition credit to the individuals who compose a team---whether it's a team of lawyers, film-makers, or basketball players---except in the rare case where the individuals contribute to the team in totally independent ways.  
+
+### Choosing a model by greedy backward selection
+
+We have learned that it is difficult to partition credit among the individual variables in a model.  Because of this, the problem of _variable selection_, or choosing which variables to include in a model in a way that optimally balances fit and simplicity, is also difficult.
+
+There is no single, objectively correct approach to variable selection.  But all such approaches must confront two basic questions:  
+1) How should we prioritize the tradeoff between fit and simplicity?  
+2) How should we actually find the model that exhibits the best tradeoff?
+
+The commands below show you how to implement a particular approach to variable selection called the stepwise AIC method.  (AIC stands for ["Akaike's Information Criterion."](http://en.wikipedia.org/wiki/Akaike_information_criterion)) This method measures the fit/simplicity tradeoff using a somewhat complicated formula involving the residual sums of squares and the number of parameters in the model.  Smaller values of AIC are better.
+
+To see stepwise AIC selection in action, we will start with a model of wages that uses most of the other predictors in the data set.
+```{r}
+lm2 = lm(wage ~ educ + sector + age + sex + south + married + race + union, data=cps)
+anova(lm2)
+```
+
+The ANOVA table gives you an idea of which variables might be good candidates to drop. But we've learned to be somewhat skeptical the ANOVA table in situations where the predictors are correlated.  Moreover, it would be tedious to go in and drop each variable one by one to see its effect on the model.  Luckily, the handy "drop1" function automates this process for us:
+```{r}
+drop1(lm2)
+```
+
+This function considers all possible one-variable deletions from the model and calculates the residual sum of squares and AIC for each candidate.  In this case, it looks like the model in which the "married" variable is dropped leads to the smallest AIC.  If we wanted to, we could repeat this process starting from the model without this variable:
+```{r}
+lm3 = lm(wage ~ educ + sector + age + sex + south + race + union, data=cps)
+drop1(lm3)
+```
+
+It looks now like deleting "race" would lead to a slight improvement in AIC.
+
+This procedure---sequentially pruning variables in a way that makes AIC as small as possible---is often called "greedy backward selection."  It's "backward" because we start from a large model and prune downwards, and it's "greedy" because at each stage we delete the single worst variable, as measured by AIC.
+
+In large models, doing this by hand can become tedious.  To automate the process, use the "step" function, starting from the largest candidate model:
+```{r}
+lm4 = lm(wage ~ educ + sector + age + sex + south + married + race + union + sex:age, data=cps)
+lmstep = step(lm4, direction='backward')
+```
+
+If we change the flag specifying `direction='backward'` to `direction='both'`, we are allowing the possibility that a variable, once deleted, can be re-introduced at some point later on in the step-wise procedure:
+```{r}
+lmstep = step(lm4, direction='both')
+```
