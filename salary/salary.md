@@ -116,16 +116,16 @@ We can quantify our uncertainty about this effect via bootstrapping:
     confint(boot3)
 
     ##         name         lower        upper level     method     estimate
-    ## 1  Intercept 35215.3701998 4.493656e+04  0.95 percentile 3.930571e+04
-    ## 2 Experience    44.3151747 1.950210e+02  0.95 percentile 1.222467e+02
-    ## 3     Months   236.7148283 2.921528e+02  0.95 percentile 2.635782e+02
-    ## 4  Education  -736.8814256 1.434428e+03  0.95 percentile 5.910780e+02
-    ## 5        Sex   190.9743496 4.326123e+03  0.95 percentile 2.320544e+03
-    ## 6      sigma  1967.5649458 2.962562e+03  0.95 percentile 2.672043e+03
-    ## 7  r.squared     0.9151387 9.665268e-01  0.95 percentile 9.380802e-01
-    ## 8          F   102.4474432 2.743087e+02  0.95 percentile 1.439242e+02
+    ## 1  Intercept 35027.9930011 4.478963e+04  0.95 percentile 3.930571e+04
+    ## 2 Experience    42.7356224 1.949082e+02  0.95 percentile 1.222467e+02
+    ## 3     Months   237.4831449 2.908904e+02  0.95 percentile 2.635782e+02
+    ## 4  Education  -725.1925067 1.462953e+03  0.95 percentile 5.910780e+02
+    ## 5        Sex   162.2853888 4.357776e+03  0.95 percentile 2.320544e+03
+    ## 6      sigma  1969.3240366 2.955173e+03  0.95 percentile 2.672043e+03
+    ## 7  r.squared     0.9164583 9.668175e-01  0.95 percentile 9.380802e-01
+    ## 8          F   104.2157427 2.767955e+02  0.95 percentile 1.439242e+02
 
-In this case, the bootstrapped confidence interval runs from about $160
+In this case, the bootstrapped confidence interval runs from about $200
 to about $4300. (You'll get slightly different confidence intervals than
 shown here, because of the Monte Carlo variability inherent to
 bootstrapping.) This is quite a wide range: we cannot rule out that the

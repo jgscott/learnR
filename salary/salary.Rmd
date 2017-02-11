@@ -87,6 +87,6 @@ hist(boot3$Sex)
 confint(boot3)
 ```
 
-In this case, the bootstrapped confidence interval runs from about $160 to about $4300.  (You'll get slightly different confidence intervals than shown here, because of the Monte Carlo variability inherent to bootstrapping.)  This is quite a wide range: we cannot rule out that the wage gap is quite small, but nor can we rule out that it might run into the thousands of dollars.  
+In this case, the bootstrapped confidence interval runs from about $200 to about $4300.  (You'll get slightly different confidence intervals than shown here, because of the Monte Carlo variability inherent to bootstrapping.)  This is quite a wide range: we cannot rule out that the wage gap is quite small, but nor can we rule out that it might run into the thousands of dollars.  
 
 
