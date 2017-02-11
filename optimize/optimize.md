@@ -110,3 +110,48 @@ we can verify by plotting:
     curve(myotherfunction, from=0, to=6)
 
 ![](optimize_files/figure-markdown_strict/unnamed-chunk-10-1.png)
+
+### Without the mosaic package
+
+The `makeFun` command from the mosaic package is pretty intuitive for
+defining simple functions. But you can do the same thing in "base" R.
+Here's how to define your own function using `function` command:
+
+    myfunction = function(x) {
+      y = x^(-2.5) * (x-1)
+      return(y)
+    }
+
+This is a little bit more verbose way of defining your own function, but
+it's also more flexible. The basic structure is:  
+1. Put the function's variables inside the parentheses of the `function`
+definition, e.g. `myfunction = function(x)` here. These are called the
+arguments of the function. Here is there is only one argument, called
+x.  
+2. Put executable commands between the braces {}. E.g. here we define a
+new variable y, calculated from the argument (input) x that is passed to
+the function whenever it gets called. Here the commands to be executed
+are really short, but these can be as long or complicated as you want.  
+3. The last line of the function should return whatever you want the
+function to return---in this case, the variable y, representing the
+value of the function at the input x.
+
+Once we've done this, we have a callable function, e.g.
+
+    myfunction(2)
+
+    ## [1] 0.1767767
+
+    myfunction(3.15)
+
+    ## [1] 0.1220849
+
+And `optimize` works exactly the same as it did before.
+
+    optimize(myfunction, lower = 0, upper = 10, maximum = TRUE)
+
+    ## $maximum
+    ## [1] 1.666664
+    ## 
+    ## $objective
+    ## [1] 0.1859032
