@@ -38,7 +38,7 @@ head(sim1)
 
 You can see that `sim1` is a data frame with 1 variable, called `nflip`.  If we look at a histogram of `sim1$nflip`, we will see the probability distribution of  Patriots' wins in 25 fair coin tosses:  
 ```{r}
-hist(sim1$nflip)
+hist(sim1$nflip, breaks=20)
 ```
 
 Reaching 19 wins looks pretty unusual under this probability distribution.  If you want to quantify just how unlikely this would be, you can can simply count up the number of times that the team reached 19 wins or more, divided by the number of simulations (here 2500):  

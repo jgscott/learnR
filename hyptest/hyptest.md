@@ -20,7 +20,7 @@ of 25 coin tosses, using the `nflip` command in the mosaic library:
 
     nflip(n=25)
 
-    ## [1] 12
+    ## [1] 11
 
     nflip(n=25)
 
@@ -43,26 +43,26 @@ it's better to run a lot more than three. We can do this using the
     do(20)*nflip(n=25)
 
     ##    nflip
-    ## 1     12
-    ## 2     11
+    ## 1     10
+    ## 2     12
     ## 3     11
-    ## 4     13
-    ## 5     15
-    ## 6     10
-    ## 7     15
-    ## 8      9
-    ## 9     10
-    ## 10    14
-    ## 11    16
-    ## 12    11
-    ## 13    17
-    ## 14     6
-    ## 15    13
+    ## 4     15
+    ## 5     10
+    ## 6     15
+    ## 7     13
+    ## 8     11
+    ## 9      9
+    ## 10    15
+    ## 11    14
+    ## 12    15
+    ## 13    11
+    ## 14    16
+    ## 15    10
     ## 16    15
-    ## 17    14
-    ## 18    11
-    ## 19    13
-    ## 20    12
+    ## 17     9
+    ## 18    14
+    ## 19     7
+    ## 20    13
 
 That's 20 sequences of 25 fair coin flips, with each line representing
 the number of flips won by the Patriots (assuming a 50% win probability)
@@ -76,18 +76,18 @@ Let's now run a much larger Monte Carlo simulation (i.e. many more than
     head(sim1)
 
     ##   nflip
-    ## 1    16
-    ## 2     8
-    ## 3    10
-    ## 4    13
+    ## 1    10
+    ## 2    16
+    ## 3    13
+    ## 4    11
     ## 5    12
-    ## 6    15
+    ## 6    11
 
 You can see that `sim1` is a data frame with 1 variable, called `nflip`.
 If we look at a histogram of `sim1$nflip`, we will see the probability
 distribution of Patriots' wins in 25 fair coin tosses:
 
-    hist(sim1$nflip)
+    hist(sim1$nflip, breaks=20)
 
 ![](hyptest_files/figure-markdown_strict/unnamed-chunk-5-1.png)
 
@@ -99,7 +99,7 @@ wins or more, divided by the number of simulations (here 2500):
     pval = sum(sim1$nflip >= 19)/2500
     pval
 
-    ## [1] 0.0076
+    ## [1] 0.0072
 
 This probability is called a p-value. This one is pretty small (less
 than 1%, although yours will be different than mine, because of Monte
