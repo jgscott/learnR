@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
   
 ### Example: predictors of white-collar salaries
@@ -10,13 +8,13 @@ output:
 In this walk-through, we'll look at whether there seems to be a "wage gap" at a tech firm between male and female employees with similar qualifications.  We will use multiple regression to adjust for the effect of education and experience in evaluating the correlation between an employee's sex and his or her annual salary.  
 
 Learning goals:  
-* fit a multiple regression model  
-* correctly interpret the estimated coefficients    
-* quantify uncertainty about parameters in a multiple-regression model using bootstrapping  
+- fit a multiple regression model  
+- correctly interpret the estimated coefficients    
+- quantify uncertainty about parameters in a multiple-regression model using bootstrapping  
 
 
 Data files:  
-* [salary.csv](salary.csv): human-resources data on employees at a tech firm.
+- [salary.csv](http://jgscott.github.io/teaching/data/salary.csv): human-resources data on employees at a tech firm.
 
 First load the mosaic library and read in the data.
 ```{r, message=FALSE}
@@ -28,10 +26,10 @@ salary = read.csv('salary.csv', header=TRUE)
 ```
   
 The variables we'll use from this data set are:  
-* Salary: annual salary in dollars   
-* Experience: months of experience at the particular company  
-* Months: total months of work experience, including all previous jobs  
-* Sex: whether the employee is male or female
+- Salary: annual salary in dollars   
+- Experience: months of experience at the particular company  
+- Months: total months of work experience, including all previous jobs  
+- Sex: whether the employee is male or female
 
 Let's first Look at the distibution of salary by sex.
 ```{r}
@@ -69,26 +67,26 @@ boxplot(resid(lm2)~salary$Sex)
 
 ### Fitting a multiple regression model by least squares
 
-To get at the partial relationship between gender and salary, we must fit multiple-regression model that accounts for experience with the company and total number of months of professional work.  It is straightforward to fit such a model by least squares in R.
+To get at the partial relationship between gender and salary, we must fit multiple-regression model that accounts for experience with the company and total number of months of professional work.  We will also adjust for a third variable: years of post-secondary education.  It is straightforward to fit such a model by least squares in R.
 ```{r}
-lm3 = lm(Salary ~ Experience + Months + Sex, data=salary)
+lm3 = lm(Salary ~ Experience + Months + Education + Sex, data=salary)
 coef(lm3)
 ```
 
-According to this model, men are paid $2486 more per year than women with similar levels of work experience, both overall and with this particular company.
+According to this model, men are paid $2320 more per year than women with similar levels of education and work experience, both overall and with this particular company.
 
 
 ### Bootstrapping a multiple regression model
 
 We can quantify our uncertainty about this effect via bootstrapping:
 ```{r}
-boot3 = do(10000)*{
-  lm(Salary~Experience+Education+Sex, data=resample(salary))
+boot3 = do(5000)*{
+  lm(Salary~Experience+Months+Education+Sex, data=resample(salary))
 }
 hist(boot3$Sex)
 confint(boot3)
 ```
 
-In this case, the bootstrapped confidence interval runs from about -$2600 to about $9600.  Thus while there is the suggestion of higher salaries for men, we cannot rule the hypothesis that there is no overall difference (i.e. a coefficient of zero on the dummy variable) on average.
+In this case, the bootstrapped confidence interval runs from about $160 to about $4300.  (You'll get slightly different confidence intervals than shown here, because of the Monte Carlo variability inherent to bootstrapping.)  This is quite a wide range: we cannot rule out that the wage gap is quite small, but nor can we rule out that it might run into the thousands of dollars.  
 
 
