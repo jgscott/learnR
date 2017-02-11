@@ -10,7 +10,7 @@ Learning goal:
 
 
 Data files:  
-- [http://jgscott.github.io/teaching/data/cps.csv](cps.csv): data from the [Current Population Survey](http://www.census.gov/cps/)], a major source of data about the American labor force.
+- [cps.csv](http://jgscott.github.io/teaching/data/cps.csv): data from the [Current Population Survey](http://www.census.gov/cps/), a major source of data about the American labor force.
 
 
 ### ANOVA tables in multiple regression  
@@ -107,7 +107,7 @@ Well, union members tend to be older than non-union members (i.e. union status a
 mean(age ~ union, data=cps)
 ```
 
-And older works tend to earn more on average, than younger workers (the correlation is about 17%):  
+And older workers tend to earn more on average, than younger workers (the correlation is about 17%):  
 ```{r}
 cor(wage ~ age, data=cps)
 ```

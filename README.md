@@ -19,22 +19,28 @@
 ### Predictable and unpredictable variation  
 * [Kidney function and aging](creatinine/creatinine.md): naive prediction intervals; R^2 and the decomposition of variance     
 
-### Regression with multiple categorical variables  
+### Grouping variables in regression    
 * [Reaction time in video games](rxntime/rxntime.md): modeling numerical outcomes with more than one categorical predictor; dummy variables and interaction terms; analysis of variance.  
 * [House prices](house/house.md): regression with one numerical and multiple categorical predictors; dummy variables and interactions in simple regression models.  
 
 
-### Quantifying uncertainty: the basics   
+### Quantifying uncertainty via the bootstrap 
 * [Gone fishing](gonefishing/gonefishing.md): using the Monte Carlo method to simulate the sampling distributions of the sample mean and of the least-squares estimator  
 * [Kidney function and aging, revisited](creatinine/creatinine_bootstrap.md): bootstrapping the sample mean and the OLS estimator; computing confidence intervals from bootstrapped samples.  
 * [Newspapers](newspapers/newspapers.md): using the normal linear regression model to quantify uncertainty about parameters and predictions.    
+
+### Multiple regression: basics  
+* [The wage gap](salary/salary.md): an introduction to multiple regression  
+* [Current population survey](cps/cps.md): the affect of collinearity on the estimated coefficients and ANOVA table in a multiple regression model.  
+
+
+### Hypothesis testing
 * [Titanic, revisited](titanic/titanic_permtest.md): relative risk, odds ratios, and permutation tests in 2x2 contingency tables.  
 
 
-### Multiple regression  
-* [The wage gap](salary/salary.md): an introduction to multiple regression  
-* [Current population survey](cps/cps.md): ANOVA tables in multiple regression models; stepwise selection using AIC  
-* [Google flu trends](flu/flu.md): Building and checking a predictive model  
+### Building a predictive model 
+* [Google flu trends](flu/flu.md): Building and checking a predictive model using stepwise selection  
+
 * [Basketball point spreads](bballbets/bballbets.md): Logistic regression.  
 * [Atmospheric CO2](maunaloa/maunaloa.md): Trends and seasonal variation in time-series models.  
 

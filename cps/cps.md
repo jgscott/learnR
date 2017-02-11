@@ -6,8 +6,8 @@ Learning goal:
 the ANOVA table for a multiple regression model.
 
 Data files:  
-- [http://jgscott.github.io/teaching/data/cps.csv](cps.csv): data from
-the [Current Population Survey](http://www.census.gov/cps/)\], a major
+- [cps.csv](http://jgscott.github.io/teaching/data/cps.csv): data from
+the [Current Population Survey](http://www.census.gov/cps/), a major
 source of data about the American labor force.
 
 ### ANOVA tables in multiple regression
@@ -280,8 +280,8 @@ status and age are correlated/collinear):
     ##      Not    Union 
     ## 36.17808 39.82292
 
-And older works tend to earn more on average, than younger workers (the
-correlation is about 17%):
+And older workers tend to earn more on average, than younger workers
+(the correlation is about 17%):
 
     cor(wage ~ age, data=cps)
 
