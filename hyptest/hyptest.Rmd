@@ -59,4 +59,4 @@ Nevertheless, I would encourage you to focus on the _process_ here, rather than 
 3. There is a way of calculating the _probability distribution of the test statistic, assuming that the null hypothesis is true_.  Here, we just ran a Monte Carlo simulation of coin flips, assuming an unbiased coin.   
 4. Finally, we used this probability distribution to assess whether the null hypothesis looked believable in light of the data.   
 
-All hypothesis testing problems have these same four elements.  Usually the hard part is step 3, for which we'll learn some cool techniques.  
+All hypothesis testing problems have these same four elements.  Usually the hard part is step 3, for which we'll soon learn a cool technique called the permutation test.  

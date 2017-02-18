@@ -1,18 +1,11 @@
----
-layout: page
----
-
 ### Tests of association in 2x2 tables
 
 In this walk-through, you will revisit the Titanic data to learn about
-permutation tests. Key concepts and skills:  
-\* test statistic  
-\* relative risk  
-\* odds ratio  
-\* permutation test
+permutation tests in the context of a 2x2 contingency table.
 
 Data files:  
-\* [TitanicSurvival.csv](TitanicSurvival.csv)
+\*
+[TitanicSurvival.csv](http://jgscott.github.io/teaching/data/TitanicSurvival.csv)
 
 First download the TitanicSurvival.csv file and read it in. You can use
 RStudio's Import Dataset button, or the read.csv command:
@@ -75,7 +68,8 @@ women. There's also shortcut way to calculate this number:
     ## [1] 2.968513
 
 Note that the `relrisk` function expects the predictor variable to be
-along the rows and the outcome variable to be along the columns.
+along the rows and the outcome variable to be along the columns. If you
+get this wrong, you'll calculate the incorrect relative risk.
 
 ### Permutation tests: shuffling the cards
 
@@ -107,11 +101,11 @@ of letters:
     data.frame(shuffle(sesame_street), army)
 
     ##   shuffle.sesame_street.    army
-    ## 1                      E   alpha
-    ## 2                      C   bravo
-    ## 3                      A charlie
-    ## 4                      B   delta
-    ## 5                      D    echo
+    ## 1                      B   alpha
+    ## 2                      A   bravo
+    ## 3                      E charlie
+    ## 4                      D   delta
+    ## 5                      C    echo
 
 Try executing the line above a few times. Each time you'll get a
 different permutation of the Sesame Street alphabet, and therefore a
@@ -127,19 +121,19 @@ different times:
 
     ##    shuffle.TitanicSurvival.sex. TitanicSurvival.survived
     ## 1                          male                      yes
-    ## 2                          male                      yes
-    ## 3                          male                       no
+    ## 2                        female                      yes
+    ## 3                        female                       no
     ## 4                          male                       no
-    ## 5                        female                       no
-    ## 6                          male                      yes
-    ## 7                          male                      yes
-    ## 8                        female                       no
+    ## 5                          male                       no
+    ## 6                        female                      yes
+    ## 7                        female                      yes
+    ## 8                          male                       no
     ## 9                          male                      yes
     ## 10                         male                       no
 
 In this new data frame `titanic_shuffle`, any connection between sex and
 survival status has been explicitly broken. This simple trick of
-shuffling the cards allows us to assess the plausible range of values
+"shuffling the cards" allows us to assess the plausible range of values
 for the relative risk under the assumption that there is no association
 between the two variables. We can do this a little more concisely as
 follows:
@@ -147,7 +141,7 @@ follows:
     t1_shuffle = xtabs(~shuffle(sex) + survived, data=TitanicSurvival)
     relrisk(t1_shuffle)
 
-    ## [1] 1.021879
+    ## [1] 1.055864
 
 Try executing the code block above a few times. You notice that each
 time you calculate the relative risk, you get something much closer to 1
@@ -163,12 +157,12 @@ hypothesis of no assocation between sex and survival status.
     head(permtest1)
 
     ##          RR
-    ## 1 0.9529538
-    ## 2 1.0108670
-    ## 3 1.0558642
-    ## 4 1.0443738
-    ## 5 0.9892993
-    ## 6 0.9529538
+    ## 1 0.9683185
+    ## 2 1.0793482
+    ## 3 0.9787371
+    ## 4 0.9735100
+    ## 5 0.9735100
+    ## 6 0.9946352
 
     hist(permtest1$RR)
 
@@ -178,68 +172,32 @@ When the cards are shuffled -- and therefore when any possible
 connection between sex and survival status is explicitly broken -- the
 relative risk almost never falls outside the interval (0.85, 1.15). This
 is pretty convincing evidence that the actual value we observed (about
-3) could not have arisen due to chance.
+3) could not have arisen due to chance:
+
+    # actual relative risk:
+    t1 = xtabs(~sex + survived, data=TitanicSurvival)
+    relrisk(t1)
+
+    ## [1] 2.968513
+
+    # P value
+    # upper tail area of sampling distribution under null hypothesis:
+    pdata(permtest1$RR, relrisk(t1), lower=FALSE)
+
+    ## RR 
+    ##  0
+
+From this simple `pdata` calculation, you can see that literally none of
+the relative risks we calculated under the permutation test
+(`permtest1$RR`) exceeded the *actual* relative risk of 2.97. Therefore
+the p-value of our test statistic is effectively zero. (In reality it's
+not actually zero, but no realistic number of Monte Carlo samples will
+detect a nonzero p value here.)
 
 ### Using other statistics in the permutation test
 
-One nice feature of the permutation test is that we can use any measure
-of association we want. For example, we might prefer to use the [odds
-ratio](http://en.wikipedia.org/wiki/Odds_ratio) rather than the relative
-risk. Let's recall our table of proportions:
-
-    t1 = xtabs(~sex + survived, data=TitanicSurvival)
-    p1 = prop.table(t1, margin=1)
-    p1
-
-    ##         survived
-    ## sex             no       yes
-    ##   female 0.2725322 0.7274678
-    ##   male   0.8090154 0.1909846
-
-Now we can use the propotions to calculate the odds ratio by hand.
-
-    odds_female = p1[1,1]/p1[1,2]
-    odds_male = p1[2,1]/p1[2,2]
-    odds_male/odds_female
-
-    ## [1] 11.30718
-
-As with the relative risk, there is a shortcut to calculating the odds
-ratio:
-
-    t1 = xtabs(~sex + survived, data=TitanicSurvival)
-    oddsRatio(t1)
-
-    ## [1] 11.30718
-
-Let's now use the odds ratio in a permutation test.
-
-    permtest2 = do(1000)*{
-      t1_shuffle = xtabs(~shuffle(sex) + survived, data=TitanicSurvival)
-      oddsRatio(t1_shuffle)
-    }
-    head(permtest2)
-
-    ##          OR
-    ## 1 0.9859985
-    ## 2 1.0142304
-    ## 3 1.0432162
-    ## 4 1.1191310
-    ## 5 0.9185747
-    ## 6 0.9584985
-
-    hist(permtest2$OR)
-
-![](titanic_permtest_files/figure-markdown_strict/unnamed-chunk-14-1.png)
-
-This histogram makes it clear that the actual odds ratio of 11.3 far
-exceeds what we'd expect under the hypothesis that there is no
-association between sex and survival status.
-
-### The chi-squared statistic
-
-Finally, another common measure of association is the [chi-squared
-statistic](<http://en.wikipedia.org/wiki/Pearson's_chi-squared_test#Calculating_the_test-statistic>).
+Aanother common measure of association is the [chi-squared
+statistic](http://en.wikipedia.org/wiki/Pearson's_chi-squared_test#Calculating_the_test-statistic).
 This statistic compares the counts in each cell of the table to what
 would be expected under the hypothesis that the rows and columns are
 independent of each other.
@@ -247,9 +205,43 @@ independent of each other.
     t1 = xtabs(~sex + survived, data=TitanicSurvival)
     chisq(t1)
 
-    ## X-squared 
-    ##  363.6179
+    ## X.squared 
+    ##  365.8869
 
-We'll encounter this statistic again when we look at more complicated
-contingency tables. The relative risk and odds ratio make sense for 2x2
-tables, but the chi-squared statistic generalizes more readily.
+You can also use the chi-squared statistic in a permutation test, like
+this:
+
+    permtest2 = do(1000)*{
+      t1_shuffle = xtabs(~shuffle(sex) + survived, data=TitanicSurvival)
+      chisq(t1_shuffle)
+    }
+    head(permtest2)
+
+    ##   X.squared
+    ## 1 0.2256706
+    ## 2 6.2257074
+    ## 3 0.5084059
+    ## 4 2.0331059
+    ## 5 0.1271662
+    ## 6 4.5741000
+
+    hist(permtest2$X.squared)
+
+![](titanic_permtest_files/figure-markdown_strict/unnamed-chunk-13-1.png)
+
+Similarly, you could compute a p-value for the chi-squared test as
+follows:
+
+    pdata(permtest2$X.squared, chisq(t1), lower=FALSE)
+
+    ## X.squared 
+    ##         0
+
+Again, it is zero, up to Monte Carlo accuracy.
+
+There are advantages and disadvantages to chi-square as a test
+statistic. The relative risk is certainly a lot easier to understand and
+interpret, especially for non-experts. On the other hand, relative risk
+only makes sense 2x2 tables, while the chi-squared statistic generalizes
+quite readily to tables with more than two rows or more than two
+columns.
