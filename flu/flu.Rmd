@@ -1,94 +1,270 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ## Predictive models for flu activity: Google flu trends  
 
-In this walk-through, you'll build and test a predictive model using forward and backward stepwise selection.
+In this walk-through, you'll build and test a predictive model using stepwise selection.
 
 The data you'll look at contain weekly data from the Centers for Disease Control on the number of influenza-like illnesses reported in the south-eastern United States.  This column is labeled "TILI" in the two data files below.  The data run from 2008 through the last week of 2011.
 
 In addition, you have information on 86 flu-related search terms from Google's databases.  Some are obvious ("how.long.does.flu.last"); some tug at the heart a bit ("child.temperature"); a handful are funny ("can.dogs.get.the.flu").  Each entry indicates how often someone Googled that phrase during that particular week.  The units here are standard deviations above the mean for that particular search string (or any search string containing the given string).  Thus a positive number indicates that more people Googled that phrase in that particular week than they did in an average week.
 
 Data files:  
-* [flu.csv](flu.csv): data from 2008 through 2011.    
+* [flu.csv](http://jgscott.github.io/teaching/data/flu.csv): data from 2008 through 2011.    
 
 As usual, load the mosaic library and the data set.
 ```{r, message=FALSE}
 library(mosaic)
 flu = read.csv("flu.csv", header=TRUE)
-names(flu)
+names(flu)  # the actual search terms
 ```
 
-### Building and checking a predictive model
+### Data cleaning and pre-processing
 
-Let's plot the outcome variable over time and compare this to one of the predictors:
+The first thing to notice here is that the data set has 21 observations with missing outcome variables, denoted `NA`:
 ```{r}
-plot(cdcflu~week, data=flu)
-plot(over.the.counter.flu.medicine~week, data=flu)
+summary(flu$cdcflu)
 ```
 
-It looks like the search terms will be useful here.  Let's do three things:
-1) Split the data into a training and testing set, for the purpose of building and testing a predictive model for flu activity.  
-2) Fit a model to the training set.  
-3) Make predictions on the testing set and check our performance.  
+We can use the `is.na` function to tell us which cases these are:
+```{r}
+na_cases = which(is.na(flu$cdcflu))
+flu[na_cases, 1:2]
+```
 
-We first need to take care of a minor pre-processing step: separating the "week" variable from the data.  We don't want R thinking "week" is a variable to be used for prediction when we build a model.
+It looks like these are all in the summer, way out of flu season.  We'll remove these cases (rows) from the data set, since we can't learn anything from a data point where the y variable isn't observed.
+```{r}
+flu = flu[-na_cases,]
+```
+
+
+We next need to take care of a minor pre-processing step: separating the "week" variable from the data.  We don't want R thinking "week" is a variable to be used for prediction when we build a model.  Therefore, we'll peel the first column off the data set and save it as a separate "flu_week" variable.  Then we'll delete that first column from the main data set.  
 ```{r}
 flu_week = flu[,1]
 flu = flu[,-1]
 ```
 
-First let's create the training and testing sets.  There are 208 data points in the sample; let's use the last 26 of them (6 months) as a testing set. We'll use the `head` and `tail` functions to take the first 182 and last 26 weeks, respectively.
+Now we'll tell R that to use the `flu_week` variable as the row names of the `flu` data frame.  That way we'll have informative row names:
 ```{r}
-flu_train = head(flu, 182)
-flu_test = tail(flu, 26)
+rownames(flu) = flu_week
+flu[1:6,1:3]  # first 6 rows and 3 columns
 ```
 
-Now let's fit a model to `flu_train` and make predictions:
+
+### Building and checking a predictive model
+
+Let's start by plotting the outcome variable over time and compare this to one of the predictors:
+```{r}
+plot(cdcflu~flu_week, data=flu)
+plot(over.the.counter.flu.medicine~flu_week, data=flu)
+```
+
+It looks like the search terms will be useful here; certainly searches for "over the counter flu medicine" look to have a very similar seasonal pattern as actual flu cases.  
+
+
+To illustrate the process of building and checking a predictive model, let's do three things:
+1. Split the data into a training and testing set.  
+2. Fit a model to the training set.  
+3. Make predictions on the testing set and check our generalization error.  
+
+First, let's create our training and testing sets.  There are 187 data points in the sample; let's use 150 of them (about 80%) as a training set, and the remaining 20% as a testing set.  
+
+To do this, we'll use the `sample` function to randomly sample a set of cases in the training set:
+```{r}
+n = nrow(flu)  # how many total observations?
+train_cases = sample(1:n, size=150) # which cases are in the training set?
+flu_train = flu[train_cases,] # these cases in the training set
+flu_test = flu[-train_cases,] # remaining cases in testing set
+```
+
+The `train_cases` variable tells you which rows (cases) of the flu data frame are in the training set.  We store these rows in the `flu_train` data frame, and the remaining ones in the `flu_test` data frame.
+
+Now let's fit a simple model (with only three search terms) using the data in `flu_train` to make predictions:
 ```{r}
 lm1 = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine + treat.a.fever, data=flu_train)
 yhat_test = predict(lm1, newdata=flu_test)
 ```
 
-Finally, let's calculate the prediction error we make on the test set:
+Our predictions are reasonably well correlated with the actual responses in the testing set:
 ```{r}
-plot(yhat_test, flu_test$cdcflu)
-# Calculate correlation and root mean-squared error
-cor(yhat_test, flu_test$cdcflu)
-RMSE = sqrt(mean( (yhat_test-flu_test$cdcflu)^2))
-RMSE
+plot(cdcflu ~ yhat_test, data = flu_test)
+abline(0,1)
 ```
+
+Finally, let's calculate the mean-squared prediction error (MSPE) that we make on the test set:
+```{r}
+MSPE =  mean( (yhat_test-flu_test$cdcflu)^2)
+RMSPE = sqrt(MSPE)
+RMSPE
+```
+
+Your number will be slightly different from mine, since the train/test split is random.
+
+### Averaging over multiple train/test splits
+
+Our estimate of the mean-squared prediction error depends on the particular (random) way in which we split the data into training and testing sets.  To reduce this dependence, we can average our results over many different train/test splits.  This is easy to accomplish in R, by placing our code for split/fit/test inside a loop.  
+
+The code below averages the RMSPE over 100 different train/test splits:
+```{r}
+n_splits = 100
+out = do(n_splits)*{
+  # Step 1: split
+  train_cases = sample(1:n, size=150) # different sample each time
+  flu_train = flu[train_cases,] # training set
+  flu_test = flu[-train_cases,] # testing set
+
+  # Step 2: fit
+  lm1 = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine +
+             treat.a.fever, data=flu_train)
+  
+  # Step 3: test
+  yhat_test = predict(lm1, newdata=flu_test)
+  MSPE =  mean( (yhat_test-flu_test$cdcflu)^2)
+  RMSPE = sqrt(MSPE)
+  RMSPE
+}
+```
+
+We now have 100 different estimates of the (root) mean-squared predictive error:
+```{r}
+hist(out$result)
+```
+
+And we can average these to get an estimate of MSPE that is less subject to Monte Carlo variability:
+```{r}
+mean(out$result)
+```
+
+
+### Comparing with the full model
+
+Can we do better than this simple three-variable model?  We'll use every search term in the data set.  In R, the `.' in a formula statement means "use every variable not otherwise named."  This will give us quite a big model, with 87 parameters (an intercept + 86 search terms):
+```{r}
+lm_big = lm(cdcflu ~ ., data=flu_train)
+```
+
+Let's use the testing set to compare the error of this big model with the small three-variable model:
+```{r}
+# Fit small model
+lm_small = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine + treat.a.fever, data=flu_train)
+
+# Form predictions
+yhat_test_small = predict(lm_small, newdata=flu_test)
+yhat_test_big = predict(lm_big, newdata=flu_test)
+
+# Check generalization error of each model
+RMSPE_small = sqrt(mean( (yhat_test_small-flu_test$cdcflu)^2))
+RMSPE_big = sqrt(mean( (yhat_test_big-flu_test$cdcflu)^2))
+
+# The result?
+c(RMSPE_small, RMSPE_big)
+```
+
+This tells which model performed better on this particular testing set.  But clearly it will be better to average over many different train/test splits.
+
+```{r}
+n_splits = 100
+out = do(n_splits)*{
+  # Step 1: split
+  train_cases = sample(1:n, size=150) # different sample each time
+  flu_train = flu[train_cases,] # training set
+  flu_test = flu[-train_cases,] # testing set
+
+  # Step 2: fit both models
+  lm_big = lm(cdcflu ~ ., data=flu_train)
+  lm_small = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine +
+                  treat.a.fever, data=flu_train)
+
+  # Step 3: form predictions and test
+  yhat_test_small = predict(lm_small, newdata=flu_test)
+  yhat_test_big = predict(lm_big, newdata=flu_test)
+  RMSPE_small = sqrt(mean( (yhat_test_small-flu_test$cdcflu)^2))
+  RMSPE_big = sqrt(mean( (yhat_test_big-flu_test$cdcflu)^2))
+
+  # The result?
+  c(RMSPE_small, RMSPE_big)
+}
+```
+
+And now we can calculate the mean of each model's generalization error across all these different train/test splits:
+```{r}
+colMeans(out)
+```
+
+It looks as though the big model has _worse_ generalization error than the simple three-variable model --- a classic example of overfitting.  In this case, the big model has 87 parameters, but there are only 150 data points in the training set, and so the big model is overwhelmed by noise in the data.
 
 ### Using stepwise selection
 
-A natural question is: can we do better than this simple three-variable model?  We'll use every search term in the data set.  In R, the `.' in a formula statement means "use every variable not otherwise named."
+We've seem that the small three-variable model actually outperforms the big, 86-variable model at prediction.  But is there some happy medium?  That is, can we do better by including somewhere between 3 and 86 variables?
 
+We'll use stepwise selection to search for a model that leads to superior generalization error, starting from the big model.  Notice that we use _all_ the data, not just the training data, to actually search for a model using stepwise selection:
 ```{r}
-lm_all = lm(cdcflu ~ ., data=flu_train)
-yhat_all = predict(lm_all, newdata=flu_test)
-cor(yhat_all, flu_test$cdcflu)
-```
-
-
-A natural question is: can we do at least as well (or even better!) with a simpler model?  Let's use stepwise selection selection to check:
-```{r}
-lm_step = step(lm_all, direction='both', trace=0)
-summary(lm_step)
-yhat_step = predict(lm_step, newdata=flu_test)
-```
-
-```{r}
-cor(yhat_step, flu_test$cdcflu)
+lm_big = lm(cdcflu ~ ., data=flu)
+lm_step = step(lm_big, data = flu, trace=0)
+coef(lm_step)
 ```
 
 We can also compare the sizes of the two models:
 ```{r}
-length(coef(lm_all))
+length(coef(lm_big))
 length(coef(lm_step))
 ```
 
-We use many fewer predictors in the stepwise-selected model, but get predictions that are just as good (or even a tiny bit better) than the full model.  
+This model uses 32 variables (plus an intercept) -- more than 3, but a lot less than 86!
+
+Let's now see how our stepwise-selection model performs when we test its true out-of-sample performance.  There's a cute trick we can use here to save a lot of typing.  Having fit the model to the full data set, we can use the `update` function to refit that model to the training data only.  This saves us from having to laboriously type out the model formula using all 32 variables selected by the `step` function:
+```{r}
+# Step 1: split
+train_cases = sample(1:n, size=150) # different sample each time
+flu_train = flu[train_cases,] # training set
+flu_test = flu[-train_cases,] # testing set
+
+# Step 2: fit the model, i.e. update the stepwise-selected model
+# to use the training data only rather than the full data set
+lm_step_train = update(lm_step, data=flu_train)  # use update rather than lm
+
+# Step 3: form predictions and test
+yhat_test_step = predict(lm_step_train, newdata=flu_test)
+RMSPE_step = sqrt(mean( (yhat_test_step-flu_test$cdcflu)^2))
+```
+
+And the result?
+```{r}
+RMSPE_step
+```
+Again, your number will be different because of Monte Carlo variability.
+
+Of course, we'll get much more stable results by averaging over lots of train/test splits.  Let's do this, and compare the generalization error to what we get from the small and big models on the same set of splits:
+```{r}
+out = do(100)*{
+  # Step 1: split
+  train_cases = sample(1:n, size=150) # different sample each time
+  flu_train = flu[train_cases,] # training set
+  flu_test = flu[-train_cases,] # testing set
+  
+  # Step 2: fit all three models (the stepwise model using update)
+  lm_big = lm(cdcflu ~ ., data=flu_train)
+  lm_small = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine +
+                   treat.a.fever, data=flu_train)
+  lm_step_train = update(lm_step, data=flu_train)  # use update rather than lm
+  
+  # Step 3: form predictions and test
+  yhat_test_big = predict(lm_big, newdata=flu_test)
+  yhat_test_small = predict(lm_small, newdata=flu_test)
+  yhat_test_step = predict(lm_step_train, newdata=flu_test)
+  RMSPE_big = sqrt(mean( (yhat_test_big-flu_test$cdcflu)^2))
+  RMSPE_small = sqrt(mean( (yhat_test_small-flu_test$cdcflu)^2))
+  RMSPE_step = sqrt(mean( (yhat_test_step-flu_test$cdcflu)^2))
+  
+  # The result?
+  c(RMSPE_small, RMSPE_big, RMSPE_step)
+}
+
+# Average of the different splits
+colMeans(out)
+```
+
+Your numbers will be a bit different, but on average, you should notice that the stepwise model (the third entry) significantly outperforms both the small model and the big model.
+
