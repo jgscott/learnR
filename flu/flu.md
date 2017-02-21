@@ -204,8 +204,8 @@ for "over the counter flu medicine" look to have a very similar seasonal
 pattern as actual flu cases.
 
 To illustrate the process of building and checking a predictive model,
-let's do three things: 1. Split the data into a training and testing
-set.  
+let's do three things:  
+1. Split the data into a training and testing set.  
 2. Fit a model to the training set.  
 3. Make predictions on the testing set and check our generalization
 error.
@@ -227,27 +227,29 @@ frame are in the training set. We store these rows in the `flu_train`
 data frame, and the remaining ones in the `flu_test` data frame.
 
 Now let's fit a simple model (with only three search terms) using the
-data in `flu_train` to make predictions:
+data in `flu_train`, and then use the data in `flu_test` to make
+predictions.
 
     lm1 = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine + treat.a.fever, data=flu_train)
     yhat_test = predict(lm1, newdata=flu_test)
 
-Our predictions are reasonably well correlated with the actual responses
-in the testing set:
+These are *out-of-sample* predictions, since we didn't use these data
+points to help fit the original model. These predictions are reasonably
+well correlated with the actual responses in the testing set:
 
     plot(cdcflu ~ yhat_test, data = flu_test)
     abline(0,1)
 
 ![](flu_files/figure-markdown_strict/unnamed-chunk-10-1.png)
 
-Finally, let's calculate the mean-squared prediction error (MSPE) that
-we make on the test set:
+Finally, let's calculate the mean-squared prediction error (MSPE) on the
+test set:
 
     MSPE =  mean( (yhat_test-flu_test$cdcflu)^2)
     RMSPE = sqrt(MSPE)
     RMSPE
 
-    ## [1] 439.4428
+    ## [1] 345.2796
 
 Your number will be slightly different from mine, since the train/test
 split is random.
@@ -292,16 +294,193 @@ to Monte Carlo variability:
 
     mean(out$result)
 
-    ## [1] 417.9038
+    ## [1] 411.2591
 
 ### Comparing with the full model
 
-Can we do better than this simple three-variable model? We'll use every
-search term in the data set. In R, the \`.' in a formula statement means
-"use every variable not otherwise named." This will give us quite a big
-model, with 87 parameters (an intercept + 86 search terms):
+Can we do better than this simple three-variable model? To see, we'll
+use every search term in the data set as a predictor. This will give us
+quite a big model, with 87 parameters (an intercept + 86 search terms).
+In the following model statement, the \`.' means "use every variable not
+otherwise named."
 
     lm_big = lm(cdcflu ~ ., data=flu_train)
+    coef(lm_big)
+
+    ##                              (Intercept) 
+    ##                               773.751306 
+    ##                          dangerous.fever 
+    ##                               -16.069917 
+    ##                   how.long.does.flu.last 
+    ##                               155.834269 
+    ##                           i.have.the.flu 
+    ##                              -136.647130 
+    ##                              fever.cough 
+    ##                               268.507169 
+    ##        what.to.eat.when.you.have.the.flu 
+    ##                                88.998717 
+    ##                         medicine.for.flu 
+    ##                               238.297889 
+    ## how.long.are.you.contagious.with.the.flu 
+    ##                              -129.091167 
+    ##                          viral.pneumonia 
+    ##                                34.402334 
+    ##                  how.to.get.over.the.flu 
+    ##                               192.427480 
+    ##                            treat.the.flu 
+    ##                               154.396828 
+    ##                         signs.of.the.flu 
+    ##                               243.679892 
+    ##                           flu.contagious 
+    ##                                -2.041536 
+    ##                          ear.thermometer 
+    ##                               -81.425067 
+    ##                     can.dogs.get.the.flu 
+    ##                                23.607846 
+    ##                   anas.barbariae.hepatis 
+    ##                               273.472211 
+    ##                         how.to.treat.flu 
+    ##                                85.119564 
+    ##                                 cure.flu 
+    ##                               192.643967 
+    ##                                treat.flu 
+    ##                               134.812447 
+    ##                              cold.or.flu 
+    ##                               -19.260745 
+    ##                     what.is.a.high.fever 
+    ##                               -20.911138 
+    ##                          oscillococcinum 
+    ##                               -35.449024 
+    ##                        treatment.for.flu 
+    ##                               146.871701 
+    ##                         remedies.for.flu 
+    ##                              -115.091641 
+    ##                how.to.get.rid.of.the.flu 
+    ##                                 8.665804 
+    ##                      bacterial.pneumonia 
+    ##                               -63.823735 
+    ##                      symptoms.of.the.flu 
+    ##                              -306.486844 
+    ##                          fever.and.cough 
+    ##                                37.932355 
+    ##                         braun.thermoscan 
+    ##                               -30.114003 
+    ##                 how.long.am.i.contagious 
+    ##                              -112.928445 
+    ##                    home.remedies.for.flu 
+    ##                              -227.243697 
+    ##                              cough.fever 
+    ##                              -173.720832 
+    ##                             cure.the.flu 
+    ##                              -200.293149 
+    ##                     low.body.temperature 
+    ##                              -189.700095 
+    ##                           contagious.flu 
+    ##                               232.587105 
+    ##                           headache.cough 
+    ##                                22.117613 
+    ##                            painful.cough 
+    ##                               -35.874104 
+    ##                           get.rid.of.flu 
+    ##                               -35.543430 
+    ##                              normal.body 
+    ##                               -38.055821 
+    ##                           cough.headache 
+    ##                               -17.375703 
+    ##                     how.to.fight.the.flu 
+    ##                                 4.785462 
+    ##                              flu.or.cold 
+    ##                              -260.844435 
+    ##            over.the.counter.flu.medicine 
+    ##                              -119.491463 
+    ##                            flu.and.fever 
+    ##                               -28.879033 
+    ##                         viral.bronchitis 
+    ##                                11.629557 
+    ##                               thermoscan 
+    ##                                91.225057 
+    ##                       taking.temperature 
+    ##                                35.916752 
+    ##                        influenza.a.and.b 
+    ##                                -9.335658 
+    ##                                fever.flu 
+    ##                               177.260550 
+    ##                         oral.thermometer 
+    ##                                58.623686 
+    ##                                  the.flu 
+    ##                                26.813551 
+    ##                     medicine.for.the.flu 
+    ##                                 2.749747 
+    ##                            treat.a.fever 
+    ##                              -230.198040 
+    ##                          cough.after.flu 
+    ##                              -120.611724 
+    ##                         acute.bronchitis 
+    ##                                35.275416 
+    ##         what.to.do.when.you.have.the.flu 
+    ##                               -55.238521 
+    ##                               bronchitis 
+    ##                                 6.178018 
+    ##                                extractum 
+    ##                               -21.064994 
+    ##                        best.flu.medicine 
+    ##                                69.606859 
+    ##              how.long.are.you.contagious 
+    ##                               -93.977675 
+    ##                           fever.reducers 
+    ##                               112.354988 
+    ##                         body.temperature 
+    ##                               -29.056927 
+    ##                             reduce.fever 
+    ##                               -56.796043 
+    ##                             flu.remedies 
+    ##                              -600.712699 
+    ##         anas.barbariae.hepatis.et.cordis 
+    ##                                48.389338 
+    ##                     remedies.for.the.flu 
+    ##                              -250.703573 
+    ##                       symptoms.pneumonia 
+    ##                               -31.261587 
+    ##                           viral.syndrome 
+    ##                               124.958869 
+    ##                         the.flu.symptoms 
+    ##                                 9.650402 
+    ##                        what.is.influenza 
+    ##                                65.749104 
+    ##                                pneumonia 
+    ##                               -46.313597 
+    ##                        fever.temperature 
+    ##                                30.248829 
+    ##                        child.temperature 
+    ##                                55.190036 
+    ##            incubation.period.for.the.flu 
+    ##                                61.528149 
+    ##                               high.fever 
+    ##                              -127.738847 
+    ##                            low.body.temp 
+    ##                               -71.379277 
+    ##                 how.long.does.fever.last 
+    ##                               260.629467 
+    ##                            is.it.the.flu 
+    ##                                81.349326 
+    ##                   what.to.do.for.the.flu 
+    ##                                23.353996 
+    ##                            fight.the.flu 
+    ##                               195.646005 
+    ##                   symptoms.of.bronchitis 
+    ##                               292.040884 
+    ##                     bacterial.bronchitis 
+    ##                                56.788870 
+    ##                              chest.cough 
+    ##                                79.704834 
+    ##                             fever.breaks 
+    ##                               -35.949067 
+    ##                          cough.and.fever 
+    ##                               -18.660017 
+    ##                           fever.too.high 
+    ##                                61.800394 
+    ##                       early.flu.symptoms 
+    ##                                -6.747565
 
 Let's use the testing set to compare the error of this big model with
 the small three-variable model:
@@ -320,7 +499,7 @@ the small three-variable model:
     # The result?
     c(RMSPE_small, RMSPE_big)
 
-    ## [1] 339.795 629.394
+    ## [1] 366.0329 574.5212
 
 This tells which model performed better on this particular testing set.
 But clearly it will be better to average over many different train/test
@@ -354,7 +533,7 @@ across all these different train/test splits:
     colMeans(out)
 
     ##       V1       V2 
-    ## 414.2833 521.3321
+    ## 408.1512 511.1926
 
 It looks as though the big model has *worse* generalization error than
 the simple three-variable model --- a classic example of overfitting. In
@@ -450,7 +629,7 @@ And the result?
 
     RMSPE_step
 
-    ## [1] 219.6537
+    ## [1] 252.5198
 
 Again, your number will be different because of Monte Carlo variability.
 
@@ -486,7 +665,7 @@ to what we get from the small and big models on the same set of splits:
     colMeans(out)
 
     ##       V1       V2       V3 
-    ## 413.2883 517.2954 286.8966
+    ## 415.8322 519.5109 286.9927
 
 Your numbers will be a bit different, but on average, you should notice
 that the stepwise model (the third entry) significantly outperforms both

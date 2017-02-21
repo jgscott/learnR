@@ -64,7 +64,7 @@ plot(over.the.counter.flu.medicine~flu_week, data=flu)
 It looks like the search terms will be useful here; certainly searches for "over the counter flu medicine" look to have a very similar seasonal pattern as actual flu cases.  
 
 
-To illustrate the process of building and checking a predictive model, let's do three things:
+To illustrate the process of building and checking a predictive model, let's do three things:  
 1. Split the data into a training and testing set.  
 2. Fit a model to the training set.  
 3. Make predictions on the testing set and check our generalization error.  
@@ -81,19 +81,19 @@ flu_test = flu[-train_cases,] # remaining cases in testing set
 
 The `train_cases` variable tells you which rows (cases) of the flu data frame are in the training set.  We store these rows in the `flu_train` data frame, and the remaining ones in the `flu_test` data frame.
 
-Now let's fit a simple model (with only three search terms) using the data in `flu_train` to make predictions:
+Now let's fit a simple model (with only three search terms) using the data in `flu_train`, and then use the data in `flu_test` to make predictions. 
 ```{r}
 lm1 = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine + treat.a.fever, data=flu_train)
 yhat_test = predict(lm1, newdata=flu_test)
 ```
 
-Our predictions are reasonably well correlated with the actual responses in the testing set:
+These are _out-of-sample_ predictions, since we didn't use these data points to help fit the original model.  These predictions are reasonably well correlated with the actual responses in the testing set:
 ```{r}
 plot(cdcflu ~ yhat_test, data = flu_test)
 abline(0,1)
 ```
 
-Finally, let's calculate the mean-squared prediction error (MSPE) that we make on the test set:
+Finally, let's calculate the mean-squared prediction error (MSPE) on the test set:
 ```{r}
 MSPE =  mean( (yhat_test-flu_test$cdcflu)^2)
 RMSPE = sqrt(MSPE)
@@ -140,9 +140,10 @@ mean(out$result)
 
 ### Comparing with the full model
 
-Can we do better than this simple three-variable model?  We'll use every search term in the data set.  In R, the `.' in a formula statement means "use every variable not otherwise named."  This will give us quite a big model, with 87 parameters (an intercept + 86 search terms):
+Can we do better than this simple three-variable model?  To see, we'll use every search term in the data set as a predictor.  This will give us quite a big model, with 87 parameters (an intercept + 86 search terms).  In the following model statement, the `.' means "use every variable not otherwise named."
 ```{r}
 lm_big = lm(cdcflu ~ ., data=flu_train)
+coef(lm_big)
 ```
 
 Let's use the testing set to compare the error of this big model with the small three-variable model:
