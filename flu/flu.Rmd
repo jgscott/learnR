@@ -7,7 +7,7 @@ output:
 
 In this walk-through, you'll build and test a predictive model using stepwise selection.
 
-The data you'll look at contain weekly data from the Centers for Disease Control on the number of influenza-like illnesses reported in the south-eastern United States.  This column is labeled "TILI" in the two data files below.  The data run from 2008 through the last week of 2011.
+The data you'll look at contain weekly data from the Centers for Disease Control on the number of influenza-like illnesses reported in the south-eastern United States.  This column is labeled "cdcflu" in the data file.  The data run from 2008 through the last week of 2011.
 
 In addition, you have information on 86 flu-related search terms from Google's databases.  Some are obvious ("how.long.does.flu.last"); some tug at the heart a bit ("child.temperature"); a handful are funny ("can.dogs.get.the.flu").  Each entry indicates how often someone Googled that phrase during that particular week.  The units here are standard deviations above the mean for that particular search string (or any search string containing the given string).  Thus a positive number indicates that more people Googled that phrase in that particular week than they did in an average week.
 
@@ -200,12 +200,13 @@ It looks as though the big model has _worse_ generalization error than the simpl
 
 We've seen that the small three-variable model actually outperforms the big, 86-variable model at prediction.  But is there medium-sized model that's better than either of them?  That is, can we do better by including somewhere between 3 and 86 variables in our model?
 
-We'll use stepwise selection to search for a model that leads to superior generalization error, starting from the big model.  Notice that we use _all_ the data, not just the training data, to actually search for a model using stepwise selection:
+We'll use stepwise selection to search for a model that leads to superior generalization error, starting from the big model.  A key point is that we use _all_ the data, not just the training data, to actually search for a model using stepwise selection.
 
+When you run the `step` command below, it should show _a lot_ of output on your screen as it searches for possible additions and deletions that improve the out-of-sample generalization error of the model.  If you want to suppress this output, add the flag `trace=0` to the `step` command:
 ```
-lm_big = lm(cdcflu ~ ., data=flu)
-lm_step = step(lm_big, data = flu)
-coef(lm_step)
+lm_big = lm(cdcflu ~ ., data=flu)  # fit the big model
+lm_step = step(lm_big, data = flu) # run stepwise selection
+coef(lm_step) # look at the coefficients of the selected model
 ```
 
 ```{r, message=FALSE, echo=FALSE}
@@ -214,8 +215,6 @@ lm_step = step(lm_big, trace=0, data = flu)
 coef(lm_step)
 ```
 
-
-The `step` command should show _a lot_ of output on your screen as it searches for possible additions and deletions that improve the out-of-sample generalization error of the model.  If you want to suppress this output, add the flag `trace=0` to the `step` command.
 
 Once the `step` function cannot make any improvements to the model, the algorithm terminates, and stores the resulting model in what we've called `lm_step`.
 

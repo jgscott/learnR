@@ -6,8 +6,8 @@ stepwise selection.
 
 The data you'll look at contain weekly data from the Centers for Disease
 Control on the number of influenza-like illnesses reported in the
-south-eastern United States. This column is labeled "TILI" in the two
-data files below. The data run from 2008 through the last week of 2011.
+south-eastern United States. This column is labeled "cdcflu" in the data
+file. The data run from 2008 through the last week of 2011.
 
 In addition, you have information on 86 flu-related search terms from
 Google's databases. Some are obvious ("how.long.does.flu.last"); some
@@ -249,7 +249,7 @@ test set:
     RMSPE = sqrt(MSPE)
     RMSPE
 
-    ## [1] 477.4367
+    ## [1] 462.24
 
 Your number will be slightly different from mine, since the train/test
 split is random.
@@ -294,7 +294,7 @@ to Monte Carlo variability:
 
     mean(out$result)
 
-    ## [1] 410.4394
+    ## [1] 421.311
 
 ### Comparing with the full model
 
@@ -308,179 +308,179 @@ otherwise named."
     coef(lm_big)
 
     ##                              (Intercept) 
-    ##                              736.9608878 
+    ##                              574.7792551 
     ##                          dangerous.fever 
-    ##                              -55.3301569 
+    ##                               10.1563293 
     ##                   how.long.does.flu.last 
-    ##                              -97.2054244 
+    ##                              264.5559616 
     ##                           i.have.the.flu 
-    ##                              176.2093356 
+    ##                              230.0980499 
     ##                              fever.cough 
-    ##                              -56.5954789 
+    ##                               53.2588417 
     ##        what.to.eat.when.you.have.the.flu 
-    ##                              174.5657472 
+    ##                              106.2188906 
     ##                         medicine.for.flu 
-    ##                               12.7418114 
+    ##                              107.6863163 
     ## how.long.are.you.contagious.with.the.flu 
-    ##                               21.0990608 
+    ##                               66.7708499 
     ##                          viral.pneumonia 
-    ##                              114.4942361 
+    ##                              126.1719228 
     ##                  how.to.get.over.the.flu 
-    ##                              174.5033328 
+    ##                              173.0398752 
     ##                            treat.the.flu 
-    ##                              443.4961498 
+    ##                             -649.4337441 
     ##                         signs.of.the.flu 
-    ##                              118.4830147 
+    ##                              -28.9892728 
     ##                           flu.contagious 
-    ##                              -16.6101661 
+    ##                               -7.0306621 
     ##                          ear.thermometer 
-    ##                              -21.1091727 
+    ##                              -53.7921370 
     ##                     can.dogs.get.the.flu 
-    ##                              -45.2078812 
+    ##                               79.1066905 
     ##                   anas.barbariae.hepatis 
-    ##                              206.2928667 
+    ##                               11.4602881 
     ##                         how.to.treat.flu 
-    ##                              -82.6260768 
+    ##                               90.8010913 
     ##                                 cure.flu 
-    ##                              371.3268611 
+    ##                              370.2647391 
     ##                                treat.flu 
-    ##                               27.3779209 
+    ##                               -2.3919247 
     ##                              cold.or.flu 
-    ##                               57.5863429 
+    ##                               58.6911522 
     ##                     what.is.a.high.fever 
-    ##                              -12.8918239 
+    ##                               18.5235817 
     ##                          oscillococcinum 
-    ##                               63.8850529 
+    ##                               11.5593276 
     ##                        treatment.for.flu 
-    ##                              -14.5541187 
+    ##                              149.9627522 
     ##                         remedies.for.flu 
-    ##                             -243.8328369 
+    ##                             -602.5401878 
     ##                how.to.get.rid.of.the.flu 
-    ##                               92.7041911 
+    ##                              109.8842819 
     ##                      bacterial.pneumonia 
-    ##                              -24.1865359 
+    ##                                8.9460911 
     ##                      symptoms.of.the.flu 
-    ##                             -270.8577862 
+    ##                             -232.4405631 
     ##                          fever.and.cough 
-    ##                               13.3390056 
+    ##                               27.5937292 
     ##                         braun.thermoscan 
-    ##                              -81.1030075 
+    ##                               -0.4694415 
     ##                 how.long.am.i.contagious 
-    ##                               61.2026717 
+    ##                              -12.9619358 
     ##                    home.remedies.for.flu 
-    ##                             -152.7514817 
+    ##                              259.5772567 
     ##                              cough.fever 
-    ##                               19.0237078 
+    ##                               -1.8638884 
     ##                             cure.the.flu 
-    ##                              -15.7522501 
+    ##                              -79.9163183 
     ##                     low.body.temperature 
-    ##                             -175.5622214 
+    ##                             -256.2670365 
     ##                           contagious.flu 
-    ##                             -100.9357891 
+    ##                               47.0825515 
     ##                           headache.cough 
-    ##                                6.0407808 
+    ##                               83.5058418 
     ##                            painful.cough 
-    ##                              -12.5080703 
+    ##                               70.4084316 
     ##                           get.rid.of.flu 
-    ##                               58.0317901 
+    ##                              -32.8942484 
     ##                              normal.body 
-    ##                               43.1322823 
+    ##                              -12.8520172 
     ##                           cough.headache 
-    ##                               25.4689289 
+    ##                              -41.9942601 
     ##                     how.to.fight.the.flu 
-    ##                               48.4889219 
+    ##                             -104.6573021 
     ##                              flu.or.cold 
-    ##                             -242.9741008 
+    ##                             -298.1330851 
     ##            over.the.counter.flu.medicine 
-    ##                               -3.9704551 
+    ##                              -76.1903750 
     ##                            flu.and.fever 
-    ##                              143.9292988 
+    ##                               12.8277770 
     ##                         viral.bronchitis 
-    ##                               11.6930684 
+    ##                              -23.6266194 
     ##                               thermoscan 
-    ##                               24.1969677 
+    ##                              104.7916489 
     ##                       taking.temperature 
-    ##                               32.7466630 
+    ##                              107.8744598 
     ##                        influenza.a.and.b 
-    ##                               43.0260869 
+    ##                                9.8787215 
     ##                                fever.flu 
-    ##                              -46.3360410 
+    ##                              179.9350131 
     ##                         oral.thermometer 
-    ##                               82.4650990 
+    ##                                0.7774768 
     ##                                  the.flu 
-    ##                              -23.4067899 
+    ##                                6.4132449 
     ##                     medicine.for.the.flu 
-    ##                              -15.7353139 
+    ##                              164.6661989 
     ##                            treat.a.fever 
-    ##                              -36.3540930 
+    ##                              -97.9147282 
     ##                          cough.after.flu 
-    ##                               87.2657849 
+    ##                             -106.0255974 
     ##                         acute.bronchitis 
-    ##                               11.8054724 
+    ##                               92.0216616 
     ##         what.to.do.when.you.have.the.flu 
-    ##                             -105.3402310 
+    ##                              -67.6171389 
     ##                               bronchitis 
-    ##                               18.0074288 
+    ##                               64.9231736 
     ##                                extractum 
-    ##                              -46.6117223 
+    ##                              -10.3284239 
     ##                        best.flu.medicine 
-    ##                             -154.2243811 
+    ##                                8.9042059 
     ##              how.long.are.you.contagious 
-    ##                              -17.6181799 
+    ##                             -111.0845950 
     ##                           fever.reducers 
-    ##                              116.5216595 
+    ##                              140.2853536 
     ##                         body.temperature 
-    ##                                9.7141397 
+    ##                               84.9721864 
     ##                             reduce.fever 
-    ##                              -85.6968968 
+    ##                              -21.4841528 
     ##                             flu.remedies 
-    ##                              -75.4859464 
+    ##                               31.4493938 
     ##         anas.barbariae.hepatis.et.cordis 
-    ##                              -29.3448465 
+    ##                              237.0209692 
     ##                     remedies.for.the.flu 
-    ##                              -30.3793628 
+    ##                              -12.0229448 
     ##                       symptoms.pneumonia 
-    ##                              -27.2286546 
+    ##                              -61.7503476 
     ##                           viral.syndrome 
-    ##                              -68.1762357 
+    ##                               59.7938784 
     ##                         the.flu.symptoms 
-    ##                             -148.6138595 
+    ##                             -106.0050967 
     ##                        what.is.influenza 
-    ##                              190.7448176 
+    ##                               90.3650641 
     ##                                pneumonia 
-    ##                               24.2097936 
+    ##                               55.7366742 
     ##                        fever.temperature 
-    ##                               40.7280936 
+    ##                               -6.6689307 
     ##                        child.temperature 
-    ##                              -43.1151911 
+    ##                               28.2386276 
     ##            incubation.period.for.the.flu 
-    ##                             -131.6218902 
+    ##                             -208.0295899 
     ##                               high.fever 
-    ##                             -146.3981624 
+    ##                             -132.5657827 
     ##                            low.body.temp 
-    ##                              -28.3526965 
+    ##                               55.5041267 
     ##                 how.long.does.fever.last 
-    ##                               94.6537532 
+    ##                               43.5754236 
     ##                            is.it.the.flu 
-    ##                                2.6597317 
+    ##                               13.2412759 
     ##                   what.to.do.for.the.flu 
-    ##                               49.3995228 
+    ##                                9.2890543 
     ##                            fight.the.flu 
-    ##                               33.9282777 
+    ##                              129.5018026 
     ##                   symptoms.of.bronchitis 
-    ##                               -3.6329087 
+    ##                             -207.5998002 
     ##                     bacterial.bronchitis 
-    ##                              105.7237677 
+    ##                               37.6700681 
     ##                              chest.cough 
-    ##                              -48.8539551 
+    ##                              -37.9055993 
     ##                             fever.breaks 
-    ##                             -122.2597123 
+    ##                               83.1734352 
     ##                          cough.and.fever 
-    ##                               19.0934320 
+    ##                               11.1822361 
     ##                           fever.too.high 
-    ##                                6.7810635 
+    ##                               52.8355496 
     ##                       early.flu.symptoms 
-    ##                                0.5412513
+    ##                               32.2512955
 
 That's a lot of coefficients! Let's now use the testing set to compare
 the error of this big model with the small three-variable model:
@@ -499,7 +499,7 @@ the error of this big model with the small three-variable model:
     # The result?
     c(RMSPE_small, RMSPE_big)
 
-    ## [1] 506.2725 662.3172
+    ## [1] 368.6170 553.3426
 
 This tells which model performed better on this particular testing set.
 But clearly it will be better to average over many different train/test
@@ -533,7 +533,7 @@ across all these different train/test splits:
     colMeans(out)
 
     ##       V1       V2 
-    ## 413.8996 509.7702
+    ## 413.2376 519.6006
 
 It looks as though the big model has *worse* generalization error than
 the simple three-variable model --- a classic example of overfitting. In
@@ -549,13 +549,18 @@ that's better than either of them? That is, can we do better by
 including somewhere between 3 and 86 variables in our model?
 
 We'll use stepwise selection to search for a model that leads to
-superior generalization error, starting from the big model. Notice that
-we use *all* the data, not just the training data, to actually search
-for a model using stepwise selection:
+superior generalization error, starting from the big model. A key point
+is that we use *all* the data, not just the training data, to actually
+search for a model using stepwise selection.
 
-    lm_big = lm(cdcflu ~ ., data=flu)
-    lm_step = step(lm_big, data = flu)
-    coef(lm_step)
+When you run the `step` command below, it should show *a lot* of output
+on your screen as it searches for possible additions and deletions that
+improve the out-of-sample generalization error of the model. If you want
+to suppress this output, add the flag `trace=0` to the `step` command:
+
+    lm_big = lm(cdcflu ~ ., data=flu)  # fit the big model
+    lm_step = step(lm_big, data = flu) # run stepwise selection
+    coef(lm_step) # look at the coefficients of the selected model
 
     ##                   (Intercept)        how.long.does.flu.last 
     ##                     689.02117                     173.03993 
@@ -591,11 +596,6 @@ for a model using stepwise selection:
     ##                     -65.25695                     110.52540 
     ##                   chest.cough 
     ##                     -48.53005
-
-The `step` command should show *a lot* of output on your screen as it
-searches for possible additions and deletions that improve the
-out-of-sample generalization error of the model. If you want to suppress
-this output, add the flag `trace=0` to the `step` command.
 
 Once the `step` function cannot make any improvements to the model, the
 algorithm terminates, and stores the resulting model in what we've
@@ -638,7 +638,7 @@ And the result?
 
     RMSPE_step
 
-    ## [1] 269.8901
+    ## [1] 267.0951
 
 Again, your number will be different because of Monte Carlo variability.
 
@@ -674,7 +674,7 @@ to what we get from the small and big models on the same set of splits:
     colMeans(out)
 
     ##       V1       V2       V3 
-    ## 410.8816 514.1212 275.2343
+    ## 416.6317 517.9292 284.5821
 
 Your numbers will be a bit different, but on average, you should notice
 that the stepwise model (the third entry) significantly outperforms both
