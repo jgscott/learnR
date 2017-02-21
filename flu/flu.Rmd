@@ -146,7 +146,7 @@ lm_big = lm(cdcflu ~ ., data=flu_train)
 coef(lm_big)
 ```
 
-Let's use the testing set to compare the error of this big model with the small three-variable model:
+That's a lot of coefficients!  Let's now use the testing set to compare the error of this big model with the small three-variable model:
 ```{r}
 # Fit small model
 lm_small = lm(cdcflu ~ flu.and.fever + over.the.counter.flu.medicine + treat.a.fever, data=flu_train)
@@ -198,22 +198,34 @@ It looks as though the big model has _worse_ generalization error than the simpl
 
 ### Using stepwise selection
 
-We've seem that the small three-variable model actually outperforms the big, 86-variable model at prediction.  But is there some happy medium?  That is, can we do better by including somewhere between 3 and 86 variables?
+We've seen that the small three-variable model actually outperforms the big, 86-variable model at prediction.  But is there medium-sized model that's better than either of them?  That is, can we do better by including somewhere between 3 and 86 variables in our model?
 
 We'll use stepwise selection to search for a model that leads to superior generalization error, starting from the big model.  Notice that we use _all_ the data, not just the training data, to actually search for a model using stepwise selection:
-```{r}
+
+```
 lm_big = lm(cdcflu ~ ., data=flu)
-lm_step = step(lm_big, data = flu, trace=0)
+lm_step = step(lm_big, data = flu)
 coef(lm_step)
 ```
 
-We can also compare the sizes of the two models:
+```{r, message=FALSE, echo=FALSE}
+lm_big = lm(cdcflu ~ ., data=flu)
+lm_step = step(lm_big, trace=0, data = flu)
+coef(lm_step)
+```
+
+
+The `step` command should show _a lot_ of output on your screen as it searches for possible additions and deletions that improve the out-of-sample generalization error of the model.  If you want to suppress this output, add the flag `trace=0` to the `step` command.
+
+Once the `step` function cannot make any improvements to the model, the algorithm terminates, and stores the resulting model in what we've called `lm_step`.
+
+We can now compare the sizes of the two models:
 ```{r}
 length(coef(lm_big))
 length(coef(lm_step))
 ```
 
-This model uses 32 variables (plus an intercept) -- more than 3, but a lot less than 86!
+The stepwise-selected model uses 32 variables (plus an intercept) -- more than 3, but a lot less than 86!
 
 Let's now see how our stepwise-selection model performs when we test its true out-of-sample performance.  There's a cute trick we can use here to save a lot of typing.  Having fit the model to the full data set, we can use the `update` function to refit that model to the training data only.  This saves us from having to laboriously type out the model formula using all 32 variables selected by the `step` function:
 ```{r}
