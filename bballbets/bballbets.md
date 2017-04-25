@@ -1,7 +1,3 @@
----
-layout: page
----
-
 ### Logistic regression
 
 In this walk-through, you'll learn about the logistic regression model.
@@ -13,10 +9,12 @@ bootstrapping and the central limit theorem.
 \* Make predictions from a logistic regression model.
 
 Data files:  
-\* [bballbets.csv](bballbets.csv): Data on college basketball games.
-Each row is a game. The variable we'd like to predict is `homewin`,
-which is an indicator for whether the home team won the game (1) or lost
-the game (0). Our predictor is `spread`, which is the Las Vegas [point
+\*
+[bballbets.csv](http://jgscott.github.io/teaching/data/bballbets.csv):
+Data on college basketball games. Each row is a game. The variable we'd
+like to predict is `homewin`, which is an indicator for whether the home
+team won the game (1) or lost the game (0). Our predictor is `spread`,
+which is the Las Vegas [point
 spread](http://en.wikipedia.org/wiki/Spread_betting) in favor of the
 home team for that game. For example, if the point spread is 10, then
 the betting markets collectively expect that the home team will win by
@@ -103,9 +101,9 @@ say into 1-point increments. But then we'd have very few games falling
 into each bucket, and our estimate of the empirical win frequency within
 each bucket would be very noisy. If you're sharp-eyed, you'll notice
 from the plot above that this is already a problem even with five-point
-intervals: the interval [20,24) has a lower empirical win frequency than
-the interval [15,20), which presumably happened only because of the
-noise induced by small sample sizes within those intervals.
+intervals: the interval \[20,24) has a lower empirical win frequency
+than the interval \[15,20), which presumably happened only because of
+the noise induced by small sample sizes within those intervals.
 
 One alternative approach is called the "linear probability model," in
 which we fit a linear model for the 0/1 outcome using least squares:
@@ -128,8 +126,8 @@ One problem with the straight-line model is that, while it fits the
 empirical-win frequencies reasonably well towards the middle, it fails
 badly for extreme values of the point spread. Notice that the empirical
 frequencies form something of a foreshortened S shape, and never fall
-outside the allowed interval [0,1]. By definition, this is impossible to
-model with a straight line.
+outside the allowed interval \[0,1\]. By definition, this is impossible
+to model with a straight line.
 
 A simple fix is to fit a binomial logistic regression model (or a logit
 model, for short) instead:
@@ -172,9 +170,8 @@ of at least two options. First, we can bootstrap:
 
     confint(boot1)
 
-    ##        name       lower     upper level method  estimate margin.of.error
-    ## 1 Intercept -0.09762385 0.3274133  0.95 stderr 0.1148947      0.21251858
-    ## 2    spread  0.12632166 0.1794258  0.95 stderr 0.1528737      0.02655207
+    ##     name     lower     upper level     method  estimate
+    ## 1 spread 0.1279127 0.1811791  0.95 percentile 0.1519448
 
 We can also appeal to R's summary function, which computes confidence
 intervals under a normal approximation to the coefficients arising from
@@ -184,9 +181,9 @@ the central limit theorem:
 
     ## Waiting for profiling to be done...
 
-    ##                   2.5 %    97.5 %
-    ## (Intercept) -0.04064309 0.3882956
-    ## spread       0.12564430 0.1817760
+    ##                  2.5 %    97.5 %
+    ## (Intercept) -0.2358168 0.2163600
+    ## spread       0.1280075 0.1865749
 
 In this case, the confidence intervals are similar for the two
 techniques.
@@ -205,7 +202,7 @@ logistic regression model:
     predicted_prob
 
     ## (Intercept) 
-    ##   0.3571208
+    ##    0.312637
 
 Thus the predicted probability of a home-team victory, given a point
 spread of 5 points in favor of the visiting team, is about 34%.
@@ -218,7 +215,7 @@ values of x:
     predict(glm1, newdata=new_x, type='response')
 
     ##         1         2         3         4 
-    ## 0.3571208 0.4674315 0.7758795 0.9096309
+    ## 0.3126370 0.4207316 0.7473213 0.8981184
 
 We can also use the `predict` function to get the values of the linear
 predictor (i.e. before it is run through the link function):
@@ -226,4 +223,4 @@ predictor (i.e. before it is run through the link function):
     predict(glm1, newdata=new_x, type='link')
 
     ##          1          2          3          4 
-    ## -0.5878827 -0.1304587  1.2418134  2.3091361
+    ## -0.7878196 -0.3197706  1.0843764  2.1764907
