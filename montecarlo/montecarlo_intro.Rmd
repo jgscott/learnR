@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ## Monte Carlo simulation
