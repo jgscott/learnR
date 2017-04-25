@@ -1,8 +1,6 @@
 ---
 output:
-  md_document:
-    includes:
-      in_header: ../header.txt
+  md_document
 ---
 
 ### Logistic regression
@@ -14,7 +12,7 @@ In this walk-through, you'll learn about the logistic regression model.  Learnin
 * Make predictions from a logistic regression model.  
 
 Data files:  
-* [bballbets.csv](bballbets.csv): Data on college basketball games.  Each row is a game.  The variable we'd like to predict is `homewin`, which is an indicator for whether the home team won the game (1) or lost the game (0).  Our predictor is `spread`, which is the Las Vegas [point spread](http://en.wikipedia.org/wiki/Spread_betting) in favor of the home team for that game.  For example, if the point spread is 10, then the betting markets collectively expect that the home team will win by 10 points.
+* [bballbets.csv](http://jgscott.github.io/teaching/data/bballbets.csv): Data on college basketball games.  Each row is a game.  The variable we'd like to predict is `homewin`, which is an indicator for whether the home team won the game (1) or lost the game (0).  Our predictor is `spread`, which is the Las Vegas [point spread](http://en.wikipedia.org/wiki/Spread_betting) in favor of the home team for that game.  For example, if the point spread is 10, then the betting markets collectively expect that the home team will win by 10 points.
 
 First we'll load the required libraries and data set.
 ```{r, message=FALSE}
