@@ -1,0 +1,129 @@
+---
+output:
+  md_document
+---
+
+## Simulating stocks and bonds under a bivariate normal
+
+In this case study, you'll use historical data on stock and bond returns, in order to simulate the performance of a portfolio under various assumptions about the correlation between these two assets.
+
+### Preliminaries
+
+First load the `mosaic` and `mvtnorm` libraries.
+```{r, message=FALSE}
+library(mosaic)
+library(mvtnorm)
+```
+
+Next, read in the function from my website that allows easy simulation under the bivariate normal model:
+```{r}
+source("http://jgscott.github.io/teaching/r/mvnorm/rbvnorm.R")
+```
+
+## Simulating portfolios
+
+There are three key ingredients for simulating a portfolio of stocks and bonds (specifically, [ten-year U.S. treasury bonds](http://www.investopedia.com/terms/t/treasurybond.asp), although the same idea works for any asset class.)  
+
+First, we need some statistical assumptions about the performance of these assets.  Let's start with these:  
+- stocks have a long-term average net return of 6.5%, net of inflation, with a standard deviation of 19.5%.  
+- 10-year treasury bonds have a long-term average net return of 1.7%, with a standard deviation of 7.5%.  
+- the correlation between stock and bond returns in any given year is -0.15.  
+
+Second, we need a probability model based on these statistical assumptions that allows us to simulate from the joint distribution of stocks and bonds.  A natural candidate is the bivariate normal.  Here are the parameters we'll use:  
+```{r}
+mu_stocks = 0.065
+mu_bonds = 0.017
+sd_stocks = 0.195
+sd_bonds = 0.075
+rho = -0.15 
+```
+
+As a reminder, we call the `rbvnorm` function with these parameters in order to simulate random draws from this joint distribution.  For example, here's where 50 years of returns simulated from these model looks like: 
+```{r}
+returns = rbvnorm(50, mu_stocks, mu_bonds, sd_stocks, sd_bonds, rho)
+plot(returns)
+```
+
+Finally, we need a way of chaining together our investment performance across the years, to simulate a single imaginary future.  We do this using a for loop.  For example, the following loop allowed us to simulate one 40-year investment trajectory of a portfolio with stocks only, under a (one-variable) normal model:  
+```{r}
+Wealth = 10000
+Horizon = 40
+for(year in 1:Horizon) {
+  return_stocks = rnorm(1, mu_stocks, sd_stocks)
+	Wealth = Wealth * (1 + return_stocks)
+}
+Wealth
+```
+
+We can easily extend this idea to a bivariate normal model for stocks and bonds, tracking our wealth in each asset at each step.  Here we assume an 60/40 allocation of wealth to stocks and bonds, respectively:   
+```{r}
+total_wealth = 10000
+weights = c(0.6, 0.4) # how much of your wealth in each asset?
+wealth_by_asset = total_wealth * weights
+Horizon = 40
+for(year in 1:Horizon) {
+  # Simulate a bivariate normal set of returns
+  returns = rbvnorm(1, mu_stocks, mu_bonds, sd_stocks, sd_bonds, rho)
+  # Update wealth in each asset
+	wealth_by_asset = wealth_by_asset * (1 + returns)
+	# rebalance
+	total_wealth = sum(wealth_by_asset)
+	wealth_by_asset = total_wealth * weights
+}
+total_wealth
+```
+
+
+### The case study  
+
+The goal of this case study is simple: to understand how the correlation between stocks and bonds affects the long-term performance of your investment portfolio.  After all, this correlation isn't constant.  Rather, [it changes over time in response to larger macro-economic forces.](https://www.rba.gov.au/publications/bulletin/2014/sep/pdf/bu-0914-8.pdf)    
+
+Suppose that you start with $10,000, and that you allocate 60% of your money to stocks (with the remaining 40% to bonds).  Use Monte Carlo simulation to answer the following questions:  
+1. What are the mean and standard deviation of simulated wealth after 40 years, assuming that stocks and bonds have a correlation of -0.3?  
+2. What if stocks and bonds instead have a positive correlation of 0.3?  
+
+In each case, assume that you rebalance your portfolio every year to retain the target 60/40 allocation.  
+
+The same script that you build for this case study can be used to investigate any set of assumptions about the statistical properties of future stock/bond returns.  
+
+
+## Optional topic: the statistical properties of stocks and bonds   
+
+### The data  
+
+In this (optional) section, I'll walk through the process of estimating historical returns for stocks and bonds.  We'll use the following dat:  
+[stocks_bonds.csv](http://jgscott.github.io/teaching/data/stocks_bonds.csv): historical returns (1928 - 2016) of the S&P 500 stock index and 10-year treasury bonds.  
+
+```{r, echo=FALSE}
+stocks_bonds = read.csv('http://jgscott.github.io/teaching/data/stocks_bonds.csv')
+```
+
+Download this data and read it in, using the Import Dataset button. 
+
+Let's make histograms of these data here, just to get a sense of what we're working with:  
+```{r}
+hist(stocks_bonds$SP500)
+hist(stocks_bonds$TBOND10)
+```
+
+### Estimating the long-term mean and standard deviations    
+
+Let's calculate the historical average returns for stocks and 10-year treasury bonds.  Because we're talking about financial returns here, the most appropriate measure of "average" is the [geometric mean](http://www.investopedia.com/articles/investing/071113/breaking-down-geometric-mean.asp), rather than the more usual arithmetic mean:
+```
+mu_stocks_gross = exp(mean(log(1+stocks_bonds$SP500))) - 1
+mu_bonds_gross = exp(mean(log(1+stocks_bonds$TBOND10))) - 1
+```
+
+These are gross returns, without accounting for inflation.  To get a net average return, we'll subtract the long-term average inflation rate of 3.2%:
+```
+mu_stocks = mu_stocks_gross - 0.032
+mu_bonds = mu_bonds_gross - 0.032
+```
+
+Calculating the standard deviations is a bit easier:
+```{r}
+apply(stocks_bonds, 2, sd)
+```
+
+
+
