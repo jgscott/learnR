@@ -57,17 +57,17 @@ Read in the heights.csv data set by clicking the Import Dataset button in RStudi
 
 ![](files/import_dataset.png)
 
-When you click Import Dataset, choose the "From Text File..." option, and in the window that pops up, surf to wherever you've downloaded the heights.csv file.
+When you click Import Dataset, choose the "From CSV File..." option, and in the window that pops up, surf to wherever you've downloaded the heights.csv file.
 
 ![](files/import_file_window.png)
 
 Select the heights.csv file and open it from this window.  Now you should see a new window pop up, like this:
 
-![](files/import_options.png)
+![](files/import_options_new.png)
 
 Three common things that you'll want to double-check in this window:  
 - What do you want the data set to be called within the R environment?  By default, RStudio will name the data set after the file, so in this case the imported data frame will be stored as ``heights'' unless you provide an alternative in the "Name" field.  
-- Does the data file have a header row (i.e. is the first row the names of the variables)?  If so, make sure the "Yes" button next to "Heading" is selection.  In this case, we do have a header row providing the variable names (SHGT, MHGT, and FHGT).
+- Does the data file have a header row (i.e. is the first row the names of the variables)?  If so, make sure the "First Row as Names" option is checked. In this case, we do have a header row providing the variable names (SHGT, MHGT, and FHGT).
 - What separates the data fields?  Comma-separated files (like this one) are common; so are tab-separated files.  
 
 Usually RStudio does a good job at auto-detecting these features of the file.  But sometimes it can get tripped up, so it's good to verify what the program thinks it is seeing in this window.  
