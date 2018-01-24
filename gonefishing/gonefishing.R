@@ -86,19 +86,6 @@ sd(myboot$volume)
 # Coverage interval from the bootstrapped samples
 confint(myboot, level=0.95)
 
-
-# sample size versus precision
-n_size = seq(10, 100, by=2)
-out = rep(0, length(n_size))
-for(i in 1:length(n_size)) {
-  n = n_size[i]
-  montecarlo = do(1000)*{
-    lmmytrip = lm(weight~volume, data=sample(gonefishing, n, replace=TRUE))
-    coef(lmmytrip)
-  }
-  out[i] = sqrt(mean( (montecarlo$volume - coef(lmfull)[2])^2))
-}
-
-plot(n_size, out)
-
-plot(n_size, out*sqrt(n_size))
+# Now try using the mathematical formulas
+lm1 = lm(weight~volume, data=gonefishing)
+summary(lm1)

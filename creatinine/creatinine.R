@@ -1,6 +1,6 @@
 library(mosaic)
 
-#kidney = read.csv("kidney.csv", header=TRUE)
+kidney = read.csv("kidney.csv", header=TRUE)
 
 plot(Tot~age, data=kidney,
 	pch=19, col='grey', bty='n',
@@ -34,8 +34,7 @@ abline(lm1, lwd=2, col='blue')
 # Bootstrapping in a for-loop
 nsamples = 1000
 savedsamples = matrix(0, nrow=1000, ncol=2)
-for(i in 1:1000)
-{
+for(i in 1:1000) {
 	boot = resample(kidney)
 	lmboot = lm(Tot~age, data=boot)
 	abline(lmboot, col=rgb(5,5,5,5, maxColorValue=256))
@@ -48,7 +47,7 @@ hist(savedsamples[,1])
 hist(savedsamples[,2])
 
 # Now automate the process of doing 1000 times
-boot = do(5000)*lm(Tot~age, data=resample(kidney))
+boot = do(1000)*lm(Tot~age, data=resample(kidney))
 hist(boot)
 sd(boot)
 
