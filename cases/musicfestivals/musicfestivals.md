@@ -5,7 +5,7 @@ layout: page
 ### Which bands come to ACL Fest?
 
 For this case study, you'll need the following data set:   
-* [musicfestivals.csv](musicfestivals.csv)  
+* [musicfestivals.csv](http://jgscott.github.io/teaching/data/musicfestivals.csv)  
 
 This data set contains every band who played at one of the following five major music festivals between 2008 and 2011:  
 - [Austin City Limits](http://www.aclfestival.com), or ACL, in Zilker Park in downtown Austin.  
