@@ -3,7 +3,7 @@ dispersion of a single quantitative variable. You will also learn how to
 change some of the default plot settings in R, like changing the axis
 labels or the number of breaks in a histogram.
 
-###Learning Objectives
+### Learning Objectives
 
 **Core Skills**
 
