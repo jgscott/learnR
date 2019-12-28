@@ -137,11 +137,13 @@ Another measure of dispersion is the *coverage* or *prediction* interval: that i
 interval covering a specified fraction of the observations. For example,
 to get a central 50% coverage interval, we'd need the 25th and 75
 percentiles of the distribution. By definition, 50% of the observations
-are between these two numbers. If we were to repeatedly sample single observations
+are between these two numbers. So if we were to repeatedly sample single observations
 from this dataset completely at random, about 50% of the time they would fall into this interval
 by construction. This usually isn't so useful by itself, but if we think about trying to predict the 
 temperature on some random day in the future, we might expect the temperature on that future
-day to lie in the same interval with probability 0.50.
+day to lie in the same interval with probability 0.50. That's why these kinds of intervals are 
+most commonly called *prediction* rather than *coverage* intervals, since they're trying
+to bracket the value of a future data point. 
 
 You can get these from the `qdata`
 function.
