@@ -1,24 +1,10 @@
+
+### Learning Objectives
+
 In this walk-through, you'll learn how to measure and visualize
 dispersion of a single quantitative variable. You will also learn how to
 change some of the default plot settings in R, like changing the axis
 labels or the number of breaks in a histogram.
-
-### Learning Objectives
-
-**Core Skills**
-
-1. Reading a histogram
-1. Measuring dispersion (spread) of a single variable via standard deviation and quantiles
-2. Computing *coverage* (a.k.a. *prediction* intervals)
-2. Standardization via Z-scores as a measure of ``surprise''
-
-**R Skills**
-
-In this walkthrough you will practice:
-1. Loading packages
-2. Drawing histograms
-2. Computing cumulative probabilities and quantiles for a single variable
-3. Changing arguments to R functions
 
 **Reflection Problems**
 
