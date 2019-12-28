@@ -3,6 +3,28 @@ dispersion of a single quantitative variable. You will also learn how to
 change some of the default plot settings in R, like changing the axis
 labels or the number of breaks in a histogram.
 
+###Learning Objectives
+
+**Core Skills**
+1. Reading a histogram
+1. Measuring dispersion (spread) of a single variable via standard deviation and quantiles
+2. Standardization via Z-scores as a measure of ``surprise''
+
+**R Skills**
+In this walkthrough you will practice:
+1. Loading packages
+2. Drawing histograms
+2. Computing cumulative probabilities and quantiles for a single variable
+3. Changing arguments to R functions
+
+**Reflection Problems**
+1. Sketch the histogram of a variable for which its standard deviation is a good measure of spread.
+2. Sketch the histogram of a variable for which its standard deviation is a poor measure of spread.
+3. True or false: When an a data point from a sample is below the sample median,
+its Z-score is always negative.
+
+----------
+
 Data files:  
 \*
 [citytemps.csv](http://jgscott.github.io/teaching/data/citytemps.csv):
@@ -184,7 +206,7 @@ San Diego is actually more extreme than a 10-degree day in Rapid City!
 As this example suggests, z-scores are useful for comparing numbers that
 come from different distributions, with different statistical
 properties. It tells you how extreme a number is, relative to other
-numbers from that some distribution.
+numbers from that same distribution.
 
 ### Fancier histograms
 
