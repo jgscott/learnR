@@ -6,11 +6,14 @@ labels or the number of breaks in a histogram.
 ###Learning Objectives
 
 **Core Skills**
+
 1. Reading a histogram
 1. Measuring dispersion (spread) of a single variable via standard deviation and quantiles
+2. Computing *coverage* (a.k.a. *prediction* intervals)
 2. Standardization via Z-scores as a measure of ``surprise''
 
 **R Skills**
+
 In this walkthrough you will practice:
 1. Loading packages
 2. Drawing histograms
@@ -18,10 +21,19 @@ In this walkthrough you will practice:
 3. Changing arguments to R functions
 
 **Reflection Problems**
+
 1. Sketch the histogram of a variable for which its standard deviation is a good measure of spread.
 2. Sketch the histogram of a variable for which its standard deviation is a poor measure of spread.
-3. True or false: When an a data point from a sample is below the sample median,
-its Z-score is always negative.
+4. In the section on standardization, when discussing coverage/prediction intervals we wrote 
+"If we were to repeatedly sample single observations
+from this dataset completely at random, about 50% of the time they would fall into this interval
+by construction. This usually isn't so useful by itself, but if we think about trying to predict the 
+temperature on some random day in the future, we might expect the temperature on that future
+day to lie in the same interval with probability 0.50." Give one reason why we might *not* expect that to be the case.
+5. Visit www.zillow.com and pull up any house for sale in Austin. Find Zillow's predicted sale price for that house
+(the "Zestimate") and its range. These are coverage/prediction intervals, although Zillow is a little coy about the
+probability attached to them. Let's assume they are 90% intervals. Would a 90% coverage interval for the sale price of 
+a randomly selected Austin house be wider or narrower than Zillow's interval for your house? Why?
 
 ----------
 
@@ -121,11 +133,17 @@ distribution: the standard deviation.
 
     ## [1] 5.698457
 
-Another measure of dispersion is the coverage interval: that is, an
+Another measure of dispersion is the *coverage* or *prediction* interval: that is, an
 interval covering a specified fraction of the observations. For example,
 to get a central 50% coverage interval, we'd need the 25th and 75
 percentiles of the distribution. By definition, 50% of the observations
-are between these two numbers. You can get these from the `qdata`
+are between these two numbers. If we were to repeatedly sample single observations
+from this dataset completely at random, about 50% of the time they would fall into this interval
+by construction. This usually isn't so useful by itself, but if we think about trying to predict the 
+temperature on some random day in the future, we might expect the temperature on that future
+day to lie in the same interval with probability 0.50.
+
+You can get these from the `qdata`
 function.
 
     qdata(citytemps$Temp.SanDiego)
