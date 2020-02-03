@@ -17,9 +17,6 @@ coefficients.
 You will also learn how to change more of the default plot settings in R
 plots.
 
-**Reflection Problems**
-1. Below, you computed the standard deviation of QSAT by college, and examined the spread of the college average QSAT scores themselves (the "between" and "within" group variation in QSAT scores, respectively). Without computing it directly, do you expect the standard deviation of QSAT scores *across all colleges* (i.e., the standard deviation of QSAT across all UT undegrads, ignoring college) to be larger, smaller, or about the same as the standard deviations computed within colleges? Why? (Hint: Given the results below, is knowing a student's college informative about their GPA?)
-
 ------------------------------------
 
 You'll need this data file:  
