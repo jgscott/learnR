@@ -5,22 +5,6 @@ In this walk-through, you'll learn how to measure and visualize
 dispersion of a single quantitative variable. You will also learn how to
 change some of the default plot settings in R, like changing the axis
 labels or the number of breaks in a histogram.
-
-**Reflection Problems**
-
-1. Sketch the histogram of a variable for which its standard deviation is a good measure of spread.
-2. Sketch the histogram of a variable for which its standard deviation is a poor measure of spread.
-4. In the section on standardization, when discussing coverage/prediction intervals we wrote 
-"If we were to repeatedly sample single observations
-from this dataset completely at random, about 50% of the time they would fall into this interval
-by construction. This usually isn't so useful by itself, but if we think about trying to predict the 
-temperature on some random day in the future, we might expect the temperature on that future
-day to lie in the same interval with probability 0.50." Give one reason why we might *not* expect that to be the case.
-5. Visit www.zillow.com and pull up any house for sale in Austin. Find Zillow's predicted sale price for that house
-(the "Zestimate") and its range. These are coverage/prediction intervals, although Zillow is a little coy about the
-probability attached to them. Let's assume they are 90% intervals. Would a 90% coverage interval for the sale price of 
-a randomly selected Austin house be wider or narrower than Zillow's interval for your house? Why?
-
 ----------
 
 Data files:  
