@@ -5,7 +5,7 @@ permutation tests in the context of a 2x2 contingency table.
 
 Data files:  
 \*
-[TitanicSurvival.csv](http://jgscott.github.io/teaching/data/TitanicSurvival.csv)
+[TitanicSurvival.csv](https://github.com/jgscott/ECO394D/raw/master/data/TitanicSurvival.csv) (right click the link and use "Save As")
 
 First download the TitanicSurvival.csv file and read it in. You can use
 RStudio's Import Dataset button, or the read.csv command:
