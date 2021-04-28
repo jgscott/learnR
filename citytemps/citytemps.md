@@ -1,7 +1,11 @@
+
+### Learning Objectives
+
 In this walk-through, you'll learn how to measure and visualize
 dispersion of a single quantitative variable. You will also learn how to
 change some of the default plot settings in R, like changing the axis
 labels or the number of breaks in a histogram.
+----------
 
 Data files:  
 \*
@@ -99,11 +103,19 @@ distribution: the standard deviation.
 
     ## [1] 5.698457
 
-Another measure of dispersion is the coverage interval: that is, an
+Another measure of dispersion is the *coverage* or *prediction* interval: that is, an
 interval covering a specified fraction of the observations. For example,
 to get a central 50% coverage interval, we'd need the 25th and 75
 percentiles of the distribution. By definition, 50% of the observations
-are between these two numbers. You can get these from the `qdata`
+are between these two numbers. So if we were to repeatedly sample single observations
+from this dataset completely at random, about 50% of the time they would fall into this interval
+by construction. This usually isn't so useful by itself, but if we think about trying to predict the 
+temperature on some random day in the future, we might expect the temperature on that future
+day to lie in the same interval with probability 0.50. That's why these kinds of intervals are 
+most commonly called *prediction* rather than *coverage* intervals, since they're trying
+to bracket the value of a future data point. 
+
+You can get these from the `qdata`
 function.
 
     qdata(citytemps$Temp.SanDiego)
@@ -184,7 +196,7 @@ San Diego is actually more extreme than a 10-degree day in Rapid City!
 As this example suggests, z-scores are useful for comparing numbers that
 come from different distributions, with different statistical
 properties. It tells you how extreme a number is, relative to other
-numbers from that some distribution.
+numbers from that same distribution.
 
 ### Fancier histograms
 

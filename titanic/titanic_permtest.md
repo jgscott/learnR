@@ -5,7 +5,7 @@ permutation tests in the context of a 2x2 contingency table.
 
 Data files:  
 \*
-[TitanicSurvival.csv](http://jgscott.github.io/teaching/data/TitanicSurvival.csv)
+[TitanicSurvival.csv](https://github.com/jgscott/ECO394D/raw/master/data/TitanicSurvival.csv) (right click the link and use "Save As")
 
 First download the TitanicSurvival.csv file and read it in. You can use
 RStudio's Import Dataset button, or the read.csv command:
@@ -28,8 +28,8 @@ they survived, along with their age, sex, and cabin class.
 
 ### Relative risk in 2x2 tables
 
-One of the very first contingency tables we made looked at survival
-status stratified by sex:
+We can use the `xtabs` (short for crosstabulations) and `prop.table` (to compute proportions/frequencies from a 
+table of counts) commands to compute the survival probability for men and women:
 
     t1 = xtabs(~sex + survived, data=TitanicSurvival)
     prop.table(t1, margin=1)
@@ -38,8 +38,12 @@ status stratified by sex:
     ## sex             no       yes
     ##   female 0.2725322 0.7274678
     ##   male   0.8090154 0.1909846
+    
+Without the `margin=1` command, `prop.table` would compute a table
+of joint proababilities. Adding that command computes conditional probabilities
+of survival for men and women.
 
-This seems to suggest a strong association between survival status and
+The data seem to suggest a strong association between survival status and
 sex. A natural *test statistic* to quantify this association between the
 rows and columns of this table is the [relative
 risk](http://en.wikipedia.org/wiki/Relative_risk) of dying: that is, the
@@ -242,6 +246,6 @@ Again, it is zero, up to Monte Carlo accuracy.
 There are advantages and disadvantages to chi-square as a test
 statistic. The relative risk is certainly a lot easier to understand and
 interpret, especially for non-experts. On the other hand, relative risk
-only makes sense 2x2 tables, while the chi-squared statistic generalizes
+only makes sense in 2x2 tables, while the chi-squared statistic generalizes
 quite readily to tables with more than two rows or more than two
 columns.

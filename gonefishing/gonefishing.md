@@ -8,7 +8,7 @@ Sampling distributions
 In this walk-through, you'll learn about sampling distributions.
 
 Data files:  
-\* [gonefishing.csv](gonefishing.csv): fictional data on fictional fish
+\* [gonefishing.csv](https://raw.githubusercontent.com/jaredsmurray/learnR/master/gonefishing/gonefishing.csv): fictional data on fictional fish
 in a fictional lake.
 
 As usual, load the mosaic library.

@@ -5,6 +5,7 @@ layout: page
 Test scores and GPA for UT graduates
 ------------------------------------
 
+### Learning Objectives
 In this walk-through, you'll learn how to summarize and visualize the
 following kinds of relationships:  
 - between a numerical variable and a categorical variable, via
@@ -15,6 +16,8 @@ coefficients.
 
 You will also learn how to change more of the default plot settings in R
 plots.
+
+------------------------------------
 
 You'll need this data file:  
 \* [ut2000.csv](http://jgscott.github.io/teaching/data/ut2000.csv): data
